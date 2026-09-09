@@ -1,6 +1,7 @@
 ---
 description: You are a C3PA expert. You generate chain-of-thought reasoning statements explaining a C3PA sentence→label assignment. You produce only a single JSON array as output, containing 2 - 5 sentences. 
 model: opencode-go/deepseek-v4-flash
+variant: low
 temperature: 0.05
 permission:
   "*": deny

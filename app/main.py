@@ -1,10 +1,11 @@
 from pathlib import Path
 
-from fastapi import FastAPI, Query, Request
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from psycopg.types.json import Jsonb
+from psycopg.errors import UniqueViolation
 
 from app.db import connect
 from app.extract import extract_json_array
@@ -187,7 +188,7 @@ def sentence_detail(sentence_id: int):
             (sentence_id,),
         ).fetchone()
         if sent is None:
-            return {"error": "not found"}
+            raise HTTPException(status_code=404, detail="not found")
         labels = conn.execute(
             """
             SELECT l.id, l.name FROM sentence_labels sl
@@ -268,7 +269,7 @@ def reasoning_detail(reasoning_id: int):
             (reasoning_id,),
         ).fetchone()
     if row is None:
-        return {"error": "not found"}
+        raise HTTPException(status_code=404, detail="not found")
     return {
         "id": row[0], "sentence_id": row[1], "doc_key": row[2],
         "text": row[3], "label": row[4], "run_id": row[5],
@@ -293,19 +294,22 @@ def create_reasoning(body: ReasoningIn):
             (body.sentence_id, body.label_id),
         ).fetchone()
     if valid is None:
-        return {"error": "sentence is not labeled with that label"}, 400
+        raise HTTPException(status_code=400, detail="sentence is not labeled with that label")
     status, parsed = extract_json_array(body.raw_response)
-    with pool.connection() as conn:
-        row = conn.execute(
-            """
-            INSERT INTO reasonings
-                (sentence_id, label_id, run_id, model, raw_response, parsed, parse_status)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
-            RETURNING id
-            """,
-            (body.sentence_id, body.label_id, body.run_id, body.model,
-             body.raw_response, Jsonb(parsed) if parsed is not None else None, status),
-        ).fetchone()
+    try:
+        with pool.connection() as conn:
+            row = conn.execute(
+                """
+                INSERT INTO reasonings
+                    (sentence_id, label_id, run_id, model, raw_response, parsed, parse_status)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                RETURNING id
+                """,
+                (body.sentence_id, body.label_id, body.run_id, body.model,
+                 body.raw_response, Jsonb(parsed) if parsed is not None else None, status),
+            ).fetchone()
+    except UniqueViolation:
+        raise HTTPException(status_code=409, detail="already exists")
     return {"id": row[0], "parse_status": status, "parsed": parsed}
 
 
@@ -408,7 +412,7 @@ def get_random_prompt(
             (label_id, label_id),
         ).fetchone()
     if row is None:
-        return {"error": "not found"}
+        raise HTTPException(status_code=404, detail="not found")
     return get_prompt(row[0], label_id=row[1], min_n=min_n, max_n=max_n, generalize=generalize)
 
 
