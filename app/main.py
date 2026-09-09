@@ -10,6 +10,8 @@ from psycopg.errors import UniqueViolation
 from app.db import connect
 from app.extract import extract_json_array
 from app.promptlib import build_payload, render_prompt
+from app import claims, clusters
+from app import embeddings
 
 app = FastAPI(title="C3PA Explorer", version="0.1.0")
 pool = connect()
@@ -20,6 +22,9 @@ STATIC_DIR = Path(__file__).parent / "static"
 @app.on_event("startup")
 def startup():
     pool.open()
+    with pool.connection() as conn:
+        claims.ensure_schema(conn)
+        clusters.ensure_schema(conn)
 
 
 @app.on_event("shutdown")
@@ -309,6 +314,9 @@ def create_reasoning(body: ReasoningIn):
                 (body.sentence_id, body.label_id, body.run_id, body.model,
                  body.raw_response, Jsonb(parsed) if parsed is not None else None, status),
             ).fetchone()
+            claims.insert_for_reasoning(
+                conn, row[0], body.sentence_id, body.label_id, body.run_id, parsed
+            )
     except UniqueViolation:
         raise HTTPException(status_code=409, detail="already exists")
     return {"id": row[0], "parse_status": status, "parsed": parsed}
@@ -416,6 +424,293 @@ def get_prompt(
         "max": max_n,
         "generalize": generalize,
         "prompt": render_prompt(info["payload"], min_n, max_n, generalize),
+    }
+
+
+# -------------------------------------------------------------- Claims ----
+
+@app.get("/api/claims/status")
+def claims_status():
+    with pool.connection() as conn:
+        total = conn.execute("SELECT count(*) FROM reasonings").fetchone()[0]
+        synced = conn.execute(
+            "SELECT count(*) FROM reasonings r WHERE r.id <= %s",
+            (claims.watermark(conn),),
+        ).fetchone()[0]
+        claims_total = conn.execute("SELECT count(*) FROM claims").fetchone()[0]
+    return {
+        "reasonings_total": total,
+        "claims_synced": synced,
+        "pending": max(0, total - synced),
+        "claims_total": claims_total,
+    }
+
+
+@app.post("/api/claims/backfill")
+def claims_backfill(
+    batch_size: int = Query(default=500, ge=1, le=5000),
+):
+    with pool.connection() as conn:
+        result = claims.backfill(conn, batch_size=batch_size)
+    return result
+
+
+@app.get("/api/claims")
+def list_claims(
+    label_id: int | None = Query(default=None),
+    run_id: str | None = Query(default=None),
+    q: str | None = Query(default=None),
+    limit: int = Query(default=50, ge=1, le=500),
+    offset: int = Query(default=0, ge=0),
+):
+    where, params = ["TRUE"], []
+    if label_id is not None:
+        where.append("c.label_id = %s")
+        params.append(label_id)
+    if run_id:
+        where.append("c.run_id = %s")
+        params.append(run_id)
+    if q:
+        where.append("c.norm LIKE %s")
+        params.append(f"%{claims.normalize(q)}%")
+    cond = " AND ".join(where)
+    with pool.connection() as conn:
+        rows = conn.execute(
+            f"""
+            SELECT c.id, c.sentence_id, c.label_id, c.run_id, c.pos, c.text, c.norm,
+                   d.doc_key, l.name, s.text
+            FROM claims c
+            JOIN reasonings r ON r.id = c.reasoning_id
+            JOIN sentences s ON s.id = c.sentence_id
+            JOIN documents d ON d.id = s.doc_id
+            JOIN labels l ON l.id = c.label_id
+            WHERE {cond}
+            ORDER BY c.id
+            LIMIT %s OFFSET %s
+            """,
+            (*params, limit, offset),
+        ).fetchall()
+        total = conn.execute(
+            f"SELECT count(*) FROM claims c WHERE {cond}", params
+        ).fetchone()[0]
+    return {
+        "total": total,
+        "items": [
+            {
+                "id": r[0], "sentence_id": r[1], "label_id": r[2],
+                "run_id": r[3], "pos": r[4], "text": r[5], "norm": r[6],
+                "doc_key": r[7], "label": r[8], "sentence_text": r[9],
+            }
+            for r in rows
+        ],
+    }
+
+
+@app.get("/api/claims/overlap")
+def claims_overlap(
+    label_id: int | None = Query(default=None),
+    run_id: str | None = Query(default=None),
+):
+    where, params = ["TRUE"], []
+    if label_id is not None:
+        where.append("c.label_id = %s")
+        params.append(label_id)
+    if run_id:
+        where.append("c.run_id = %s")
+        params.append(run_id)
+    cond = " AND ".join(where)
+    with pool.connection() as conn:
+        total_occ = conn.execute(
+            f"SELECT count(*) FROM claims c WHERE {cond}", params
+        ).fetchone()[0]
+        # distinct norms that occur exactly once vs more than once
+        uniq = conn.execute(
+            f"""
+            SELECT count(*) FROM (
+                SELECT c.norm FROM claims c
+                WHERE {cond} GROUP BY c.norm HAVING count(*) = 1
+            ) u
+            """,
+            params,
+        ).fetchone()[0]
+        rep_occ = conn.execute(
+            f"""
+            SELECT count(*) FROM (
+                SELECT c.norm FROM claims c
+                WHERE {cond} GROUP BY c.norm HAVING count(*) > 1
+            ) r
+            """,
+            params,
+        ).fetchone()[0]
+        rep_occ_count = conn.execute(
+            f"""
+            SELECT COALESCE(sum(cnt), 0) FROM (
+                SELECT count(*) AS cnt FROM claims c
+                WHERE {cond} GROUP BY c.norm HAVING count(*) > 1
+            ) r
+            """,
+            params,
+        ).fetchone()[0]
+        max_occ = conn.execute(
+            f"""
+            SELECT COALESCE(max(cnt), 0) FROM (
+                SELECT count(*) AS cnt FROM claims c
+                WHERE {cond} GROUP BY c.norm
+            ) g
+            """,
+            params,
+        ).fetchone()[0]
+        # distribution of occurrence counts
+        dist = conn.execute(
+            f"""
+            SELECT cnt, count(*) AS norms FROM (
+                SELECT count(*) AS cnt FROM claims c
+                WHERE {cond} GROUP BY c.norm
+            ) g GROUP BY cnt ORDER BY cnt
+            """,
+            params,
+        ).fetchall()
+    unique_occ = total_occ - rep_occ_count
+    return {
+        "total_occurrences": total_occ,
+        "unique_claims": uniq,
+        "repeated_claims": rep_occ,
+        "unique_occurrences": unique_occ,
+        "repeated_occurrences": rep_occ_count,
+        "overlap_ratio": round(rep_occ_count / total_occ, 4) if total_occ else 0.0,
+        "max_occurrences": max_occ,
+        "distribution": [{"occurrences": r[0], "claims": r[1]} for r in dist],
+    }
+
+
+@app.get("/api/claims/aggregated")
+def list_claims_aggregated(
+    label_id: int | None = Query(default=None),
+    run_id: str | None = Query(default=None),
+    q: str | None = Query(default=None),
+    min_occurrences: int = Query(default=1, ge=1),
+    limit: int = Query(default=50, ge=1, le=500),
+    offset: int = Query(default=0, ge=0),
+):
+    where, params = ["TRUE"], []
+    if label_id is not None:
+        where.append("c.label_id = %s")
+        params.append(label_id)
+    if run_id:
+        where.append("c.run_id = %s")
+        params.append(run_id)
+    if q:
+        where.append("c.norm LIKE %s")
+        params.append(f"%{claims.normalize(q)}%")
+    cond = " AND ".join(where)
+    with pool.connection() as conn:
+        rows = conn.execute(
+            f"""
+            SELECT c.norm,
+                   count(*)                       AS occurrences,
+                   count(DISTINCT c.sentence_id)  AS sentences,
+                   count(DISTINCT c.label_id)     AS labels,
+                   count(DISTINCT c.run_id)       AS runs,
+                   max(c.text)                    AS example
+            FROM claims c
+            WHERE {cond}
+            GROUP BY c.norm
+            HAVING count(*) >= %s
+            ORDER BY occurrences DESC, c.norm
+            LIMIT %s OFFSET %s
+            """,
+            (*params, min_occurrences, limit, offset),
+        ).fetchall()
+        total = conn.execute(
+            f"""
+            SELECT count(*) FROM (
+                SELECT c.norm FROM claims c
+                WHERE {cond}
+                GROUP BY c.norm HAVING count(*) >= %s
+            ) g
+            """,
+            (*params, min_occurrences),
+        ).fetchone()[0]
+    return {
+        "total": total,
+        "items": [
+            {
+                "norm": r[0], "occurrences": r[1], "sentences": r[2],
+                "labels": r[3], "runs": r[4], "example": r[5],
+            }
+            for r in rows
+        ],
+    }
+
+
+# -------------------------------------------------------------- Clusters ----
+
+@app.get("/api/claims/clusters/status")
+def cluster_status():
+    with pool.connection() as conn:
+        clusters_ok = conn.execute(
+            "SELECT count(*) FROM claim_clusters"
+        ).fetchone()[0]
+        last = conn.execute(
+            "SELECT max(created_at) FROM claim_clusters"
+        ).fetchone()[0]
+    return {
+        "computed": clusters_ok > 0,
+        "clusters": clusters_ok,
+        "last": last.isoformat() if last else None,
+        "model_available": embeddings.available(),
+    }
+
+
+@app.post("/api/claims/clusters")
+def compute_clusters(
+    threshold: float = Query(default=0.8, ge=0.0, le=1.0),
+):
+    """Recompute semantic clusters over all distinct normalized claims."""
+    with pool.connection() as conn:
+        norms = [r[0] for r in conn.execute("SELECT DISTINCT norm FROM claims").fetchall()]
+    if not norms:
+        raise HTTPException(status_code=400, detail="no claims to cluster")
+    clusters_list, failed = clusters.cluster_norms(norms, threshold=threshold)
+    with pool.connection() as conn:
+        stats = clusters.store_clusters(conn, clusters_list, threshold)
+    return {
+        "norms": len(norms),
+        "failed": failed,
+        "threshold": threshold,
+        **stats,
+    }
+
+
+@app.get("/api/claims/clusters")
+def list_clusters(
+    min_size: int = Query(default=2, ge=2),
+    limit: int = Query(default=50, ge=1, le=500),
+    offset: int = Query(default=0, ge=0),
+):
+    with pool.connection() as conn:
+        rows = conn.execute(
+            """
+            SELECT cl.id, cl.size, cl.threshold, cl.created_at,
+                   array_agg(cnc.norm ORDER BY cnc.norm) AS norms
+            FROM claim_clusters cl
+            JOIN claim_norm_cluster cnc ON cnc.cluster_id = cl.id
+            GROUP BY cl.id
+            ORDER BY cl.size DESC, cl.id
+            LIMIT %s OFFSET %s
+            """,
+            (limit, offset),
+        ).fetchall()
+        total = conn.execute("SELECT count(*) FROM claim_clusters").fetchone()[0]
+    return {
+        "total": total,
+        "items": [
+            {
+                "id": r[0], "size": r[1], "threshold": r[2],
+                "created_at": r[3].isoformat(), "norms": r[4],
+            }
+            for r in rows
+        ],
     }
 
 

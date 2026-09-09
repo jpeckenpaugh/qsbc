@@ -22,6 +22,8 @@
       <button class="btn btn-sm btn-outline-light" data-tab="sentences">Sentences</button>
       <button class="btn btn-sm btn-outline-light" data-tab="labels">Labels</button>
       <button class="btn btn-sm btn-outline-light" data-tab="reasonings">Reasonings</button>
+      <button class="btn btn-sm btn-outline-light" data-tab="claims">Claims <span class="badge text-bg-warning d-none" id="claimsSyncBadge"></span></button>
+      <button class="btn btn-sm btn-outline-light" data-tab="clusters">Clusters</button>
       <button class="btn btn-sm btn-outline-light" data-tab="prompt">Prompt</button>
     </div>
   </div>
@@ -111,6 +113,49 @@
         <button class="btn btn-sm btn-outline-primary" data-page="next">Next</button>
       </div>
       <div id="reasonBody" class="card-body"></div>
+    </div>
+  </section>
+
+  <!-- Claims -->
+  <section id="tab-claims" class="tab-pane d-none">
+    <div class="card">
+      <div class="card-header d-flex align-items-center gap-2 flex-wrap">
+        <span class="flex-grow-1">Claims (aggregated by normalized text)
+          <span class="badge text-bg-secondary" id="claimCount"></span></span>
+        <label class="form-check-label ms-1"><input class="form-check-input" type="checkbox" id="claimRepeatOnly" checked> repeats only</label>
+        <select class="form-select form-select-sm w-auto" id="claimLabel"><option value="">All labels</option></select>
+        <select class="form-select form-select-sm w-auto" id="claimRun"><option value="">All runs</option></select>
+        <input class="form-control form-control-sm w-auto" id="claimQ" placeholder="search claims...">
+        <input class="form-control form-control-sm w-auto" id="claimMin" type="number" min="1" value="1" style="width:90px" title="min occurrences">
+        <button class="btn btn-sm btn-outline-primary" data-page="prev">Prev</button>
+        <span class="mono" id="claimPageInfo"></span>
+        <button class="btn btn-sm btn-outline-primary" data-page="next">Next</button>
+      </div>
+      <div class="card-body py-2" id="claimOverlapRow"></div>
+      <div class="table-responsive"><table class="table table-sm table-hover align-middle mb-0">
+        <thead><tr><th>Claim</th><th>Norm</th><th>#</th><th>Sentences</th><th>Labels</th><th>Runs</th></tr></thead>
+        <tbody id="claimBody"></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- Clusters -->
+  <section id="tab-clusters" class="tab-pane d-none">
+    <div class="card">
+      <div class="card-header d-flex align-items-center gap-2 flex-wrap">
+        <span class="flex-grow-1">Semantic clusters <span class="badge text-bg-secondary" id="clusterCount"></span></span>
+        <label class="form-check-label ms-1">threshold</label>
+        <input class="form-control form-control-sm w-auto" id="clusterThresh" type="number" step="0.05" min="0" max="1" value="0.8" style="width:90px">
+        <button class="btn btn-sm btn-outline-primary" id="clusterCompute">Compute</button>
+        <button class="btn btn-sm btn-outline-primary" data-page="prev">Prev</button>
+        <span class="mono" id="clusterPageInfo"></span>
+        <button class="btn btn-sm btn-outline-primary" data-page="next">Next</button>
+      </div>
+      <div class="card-body py-2" id="clusterStatusRow"></div>
+      <div class="table-responsive"><table class="table table-sm table-hover align-middle mb-0">
+        <thead><tr><th>Size</th><th>Members (normalized claims)</th></tr></thead>
+        <tbody id="clusterBody"></tbody>
+      </table></div>
     </div>
   </section>
 
@@ -308,6 +353,115 @@ async function openReasoning(id) {
   new bootstrap.Modal(document.getElementById("reasoningModal")).show();
 }
 
+// ---- Claims ----
+let claimOffset = 0;
+async function loadClaimsSync() {
+  const s = await api("/api/claims/status");
+  const badge = document.getElementById("claimsSyncBadge");
+  if (s.pending > 0) {
+    badge.textContent = `${s.pending} unsynced · sync`;
+    badge.classList.remove("d-none");
+  } else {
+    badge.classList.add("d-none");
+  }
+}
+async function syncClaims() {
+  const btn = document.getElementById("claimsSyncBadge");
+  btn.textContent = "syncing...";
+  let remaining = null;
+  do {
+    const r = await fetch("/api/claims/backfill", { method: "POST" }).then(x => x.json());
+    remaining = r.remaining;
+  } while (remaining > 0);
+  await loadClaimsSync();
+  await loadClaims();
+}
+async function loadClaimFilters() {
+  if (document.getElementById("claimRun").options.length > 1) return;
+  const l = await api("/api/labels");
+  document.getElementById("claimLabel").insertAdjacentHTML("beforeend",
+    l.map(x => `<option value="${x.id}">${esc(x.name)}</option>`).join(""));
+}
+async function loadClaims() {
+  const label = document.getElementById("claimLabel").value;
+  const run = document.getElementById("claimRun").value;
+  const q = document.getElementById("claimQ").value.trim();
+  let min = document.getElementById("claimMin").value || 1;
+  if (document.getElementById("claimRepeatOnly").checked && min < 2) min = 2;
+  const params = new URLSearchParams({ limit: LIMIT, offset: claimOffset, min_occurrences: min });
+  if (label) params.set("label_id", label);
+  if (run) params.set("run_id", run);
+  if (q) params.set("q", q);
+  const d = await api(`/api/claims/aggregated?${params}`);
+  document.getElementById("claimCount").textContent = d.total.toLocaleString();
+  document.getElementById("claimPageInfo").textContent = `${claimOffset + 1}-${Math.min(claimOffset + LIMIT, d.total)} / ${d.total}`;
+  document.getElementById("claimBody").innerHTML = d.items.length ? d.items.map(x => `
+    <tr>
+      <td>${esc(x.example)}</td>
+      <td class="mono text-secondary">${esc(x.norm)}</td>
+      <td><span class="badge ${x.occurrences > 1 ? "text-bg-warning" : "text-bg-secondary"}">${x.occurrences}</span></td>
+      <td>${x.sentences}</td><td>${x.labels}</td><td>${x.runs}</td>
+    </tr>`).join("") : `<tr><td colspan="6" class="text-secondary">No claims.</td></tr>`;
+  loadClaimsOverlap();
+}
+async function loadClaimsOverlap() {
+  const label = document.getElementById("claimLabel").value;
+  const run = document.getElementById("claimRun").value;
+  const params = new URLSearchParams();
+  if (label) params.set("label_id", label);
+  if (run) params.set("run_id", run);
+  const o = await api(`/api/claims/overlap?${params}`);
+  const pct = (o.overlap_ratio * 100).toFixed(1);
+  document.getElementById("claimOverlapRow").innerHTML = `
+    <div class="d-flex flex-wrap gap-3 small">
+      <span>Total: <b>${o.total_occurrences.toLocaleString()}</b></span>
+      <span>Unique claims: <b>${o.unique_claims.toLocaleString()}</b></span>
+      <span>Repeated claims: <b>${o.repeated_claims.toLocaleString()}</b></span>
+      <span>Repeated occurrences: <b>${o.repeated_occurrences.toLocaleString()}</b></span>
+      <span>Max occurrences: <b>${o.max_occurrences}</b></span>
+      <span class="text-${o.overlap_ratio > 0.5 ? "warning" : "success"}">Overlap ratio: <b>${pct}%</b></span>
+      <span class="text-secondary">${o.distribution.map(x => `×${x.occurrences}: ${x.claims}`).join(" · ")}</span>
+    </div>`;
+}
+
+// ---- Clusters ----
+let clusterOffset = 0;
+async function loadClusterStatus() {
+  const s = await api("/api/claims/clusters/status");
+  document.getElementById("clusterStatusRow").innerHTML = s.computed
+    ? `<span class="small">Computed: <b>${s.clusters}</b> clusters (last ${esc(s.last)})</span>`
+    : `<span class="small text-warning">No clusters computed yet. Click "Compute".</span>`;
+}
+async function computeClusters() {
+  const t = document.getElementById("clusterThresh").value || 0.8;
+  const btn = document.getElementById("clusterCompute");
+  btn.disabled = true;
+  btn.textContent = "computing...";
+  document.getElementById("clusterStatusRow").innerHTML = `<span class="small text-info">Embedding + clustering ${"..."}</span>`;
+  try {
+    const r = await fetch(`/api/claims/clusters?threshold=${t}`, { method: "POST" }).then(x => x.json());
+    document.getElementById("clusterStatusRow").innerHTML =
+      `<span class="small">Done: <b>${r.clusters}</b> clusters, ${r.members} members, ${r.singletons} singletons (${r.norms} norms, ${r.failed} failed, threshold ${r.threshold})</span>`;
+    clusterOffset = 0;
+    await loadClusters();
+  } catch (err) {
+    document.getElementById("clusterStatusRow").innerHTML = `<span class="small text-danger">${esc(err.message || String(err))}</span>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Compute";
+  }
+}
+async function loadClusters() {
+  const d = await api(`/api/claims/clusters?limit=${LIMIT}&offset=${clusterOffset}&min_size=2`);
+  document.getElementById("clusterCount").textContent = d.total.toLocaleString();
+  document.getElementById("clusterPageInfo").textContent = `${clusterOffset + 1}-${Math.min(clusterOffset + LIMIT, d.total)} / ${d.total}`;
+  document.getElementById("clusterBody").innerHTML = d.items.length ? d.items.map(x => `
+    <tr>
+      <td><span class="badge text-bg-primary">${x.size}</span></td>
+      <td><ol class="mb-0" style="max-height:140px;overflow-y:auto">${x.norms.map(n => `<li class="small">${esc(n)}</li>`).join("")}</ol></td>
+    </tr>`).join("") : `<tr><td colspan="2" class="text-secondary">No clusters.</td></tr>`;
+}
+
 // ---- Prompt ----
 let promptState = { sentenceId: "" };
 async function loadPrompt() {
@@ -341,8 +495,10 @@ document.getElementById("navTabs").addEventListener("click", async (e) => {
   const tab = btn.dataset.tab;
   state.tab = tab;
   document.getElementById(`tab-${tab}`).classList.remove("d-none");
-  const fn = { stats: loadStats, documents: loadDocuments, sentences: loadSentences, labels: loadLabels, reasonings: loadReasonings, prompt: loadPrompt }[tab];
+  const fn = { stats: loadStats, documents: loadDocuments, sentences: loadSentences, labels: loadLabels, reasonings: loadReasonings, claims: loadClaims, clusters: loadClusters, prompt: loadPrompt }[tab];
   try { await fn(); } catch (err) { console.error(err); }
+  if (tab === "claims") { loadClaimsSync(); loadClaimFilters(); }
+  if (tab === "clusters") loadClusterStatus();
 });
 
 document.addEventListener("click", async (e) => {
@@ -351,10 +507,20 @@ document.addEventListener("click", async (e) => {
   if (state.tab === "documents") state.docOffset = Math.max(0, state.docOffset + (btn.dataset.page === "next" ? LIMIT : -LIMIT)), loadDocuments();
   if (state.tab === "sentences") state.sentOffset = Math.max(0, state.sentOffset + (btn.dataset.page === "next" ? LIMIT : -LIMIT)), loadSentences();
   if (state.tab === "reasonings") state.reasonOffset = Math.max(0, state.reasonOffset + (btn.dataset.page === "next" ? LIMIT : -LIMIT)), loadReasonings();
+  if (state.tab === "claims") claimOffset = Math.max(0, claimOffset + (btn.dataset.page === "next" ? LIMIT : -LIMIT)), loadClaims();
+  if (state.tab === "clusters") clusterOffset = Math.max(0, clusterOffset + (btn.dataset.page === "next" ? LIMIT : -LIMIT)), loadClusters();
 });
 
 ["docSubsetFilter"].forEach(id => document.getElementById(id).addEventListener("change", () => { state.docOffset = 0; loadDocuments(); }));
 ["sentDoc", "sentLabel", "sentLabelMode"].forEach(id => document.getElementById(id).addEventListener("change", () => { state.sentOffset = 0; loadSentences(); }));
+let claimQTimer;
+["claimLabel", "claimRun", "claimMin", "claimRepeatOnly"].forEach(id => document.getElementById(id).addEventListener("change", () => { claimOffset = 0; loadClaims(); }));
+document.getElementById("claimQ").addEventListener("input", () => {
+  clearTimeout(claimQTimer);
+  claimQTimer = setTimeout(() => { claimOffset = 0; loadClaims(); }, 400);
+});
+document.getElementById("claimsSyncBadge").addEventListener("click", syncClaims);
+document.getElementById("clusterCompute").addEventListener("click", computeClusters);
 let qTimer;
 document.getElementById("sentQ").addEventListener("input", () => {
   clearTimeout(qTimer);
