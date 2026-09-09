@@ -7,7 +7,7 @@ snappy and avoids paying model-load cost on startup.
 
 import logging
 
-log = logging.getLogger("claims.embeddings")
+log = logging.getLogger("thoughts.embeddings")
 
 _model = None
 _model_checked = False

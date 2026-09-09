@@ -10,7 +10,7 @@ from psycopg.errors import UniqueViolation
 from app.db import connect
 from app.extract import extract_json_array
 from app.promptlib import build_payload, render_prompt
-from app import claims, clusters
+from app import thoughts, ideas
 from app import embeddings
 
 app = FastAPI(title="C3PA Explorer", version="0.1.0")
@@ -23,8 +23,8 @@ STATIC_DIR = Path(__file__).parent / "static"
 def startup():
     pool.open()
     with pool.connection() as conn:
-        claims.ensure_schema(conn)
-        clusters.ensure_schema(conn)
+        thoughts.ensure_schema(conn)
+        ideas.ensure_schema(conn)
 
 
 @app.on_event("shutdown")
@@ -314,7 +314,7 @@ def create_reasoning(body: ReasoningIn):
                 (body.sentence_id, body.label_id, body.run_id, body.model,
                  body.raw_response, Jsonb(parsed) if parsed is not None else None, status),
             ).fetchone()
-            claims.insert_for_reasoning(
+            thoughts.insert_for_reasoning(
                 conn, row[0], body.sentence_id, body.label_id, body.run_id, parsed
             )
     except UniqueViolation:
@@ -427,36 +427,36 @@ def get_prompt(
     }
 
 
-# -------------------------------------------------------------- Claims ----
+# -------------------------------------------------------------- Thoughts ----
 
-@app.get("/api/claims/status")
-def claims_status():
+@app.get("/api/thoughts/status")
+def thoughts_status():
     with pool.connection() as conn:
         total = conn.execute("SELECT count(*) FROM reasonings").fetchone()[0]
         synced = conn.execute(
             "SELECT count(*) FROM reasonings r WHERE r.id <= %s",
-            (claims.watermark(conn),),
+            (thoughts.watermark(conn),),
         ).fetchone()[0]
-        claims_total = conn.execute("SELECT count(*) FROM claims").fetchone()[0]
+        thoughts_total = conn.execute("SELECT count(*) FROM thoughts").fetchone()[0]
     return {
         "reasonings_total": total,
-        "claims_synced": synced,
+        "thoughts_synced": synced,
         "pending": max(0, total - synced),
-        "claims_total": claims_total,
+        "thoughts_total": thoughts_total,
     }
 
 
-@app.post("/api/claims/backfill")
-def claims_backfill(
+@app.post("/api/thoughts/backfill")
+def thoughts_backfill(
     batch_size: int = Query(default=500, ge=1, le=5000),
 ):
     with pool.connection() as conn:
-        result = claims.backfill(conn, batch_size=batch_size)
+        result = thoughts.backfill(conn, batch_size=batch_size)
     return result
 
 
-@app.get("/api/claims")
-def list_claims(
+@app.get("/api/thoughts")
+def list_thoughts(
     label_id: int | None = Query(default=None),
     run_id: str | None = Query(default=None),
     q: str | None = Query(default=None),
@@ -472,14 +472,14 @@ def list_claims(
         params.append(run_id)
     if q:
         where.append("c.norm LIKE %s")
-        params.append(f"%{claims.normalize(q)}%")
+        params.append(f"%{thoughts.normalize(q)}%")
     cond = " AND ".join(where)
     with pool.connection() as conn:
         rows = conn.execute(
             f"""
             SELECT c.id, c.sentence_id, c.label_id, c.run_id, c.pos, c.text, c.norm,
                    d.doc_key, l.name, s.text
-            FROM claims c
+            FROM thoughts c
             JOIN reasonings r ON r.id = c.reasoning_id
             JOIN sentences s ON s.id = c.sentence_id
             JOIN documents d ON d.id = s.doc_id
@@ -491,7 +491,7 @@ def list_claims(
             (*params, limit, offset),
         ).fetchall()
         total = conn.execute(
-            f"SELECT count(*) FROM claims c WHERE {cond}", params
+            f"SELECT count(*) FROM thoughts c WHERE {cond}", params
         ).fetchone()[0]
     return {
         "total": total,
@@ -506,8 +506,8 @@ def list_claims(
     }
 
 
-@app.get("/api/claims/overlap")
-def claims_overlap(
+@app.get("/api/thoughts/overlap")
+def thoughts_overlap(
     label_id: int | None = Query(default=None),
     run_id: str | None = Query(default=None),
 ):
@@ -521,13 +521,13 @@ def claims_overlap(
     cond = " AND ".join(where)
     with pool.connection() as conn:
         total_occ = conn.execute(
-            f"SELECT count(*) FROM claims c WHERE {cond}", params
+            f"SELECT count(*) FROM thoughts c WHERE {cond}", params
         ).fetchone()[0]
         # distinct norms that occur exactly once vs more than once
         uniq = conn.execute(
             f"""
             SELECT count(*) FROM (
-                SELECT c.norm FROM claims c
+                SELECT c.norm FROM thoughts c
                 WHERE {cond} GROUP BY c.norm HAVING count(*) = 1
             ) u
             """,
@@ -536,7 +536,7 @@ def claims_overlap(
         rep_occ = conn.execute(
             f"""
             SELECT count(*) FROM (
-                SELECT c.norm FROM claims c
+                SELECT c.norm FROM thoughts c
                 WHERE {cond} GROUP BY c.norm HAVING count(*) > 1
             ) r
             """,
@@ -545,7 +545,7 @@ def claims_overlap(
         rep_occ_count = conn.execute(
             f"""
             SELECT COALESCE(sum(cnt), 0) FROM (
-                SELECT count(*) AS cnt FROM claims c
+                SELECT count(*) AS cnt FROM thoughts c
                 WHERE {cond} GROUP BY c.norm HAVING count(*) > 1
             ) r
             """,
@@ -554,7 +554,7 @@ def claims_overlap(
         max_occ = conn.execute(
             f"""
             SELECT COALESCE(max(cnt), 0) FROM (
-                SELECT count(*) AS cnt FROM claims c
+                SELECT count(*) AS cnt FROM thoughts c
                 WHERE {cond} GROUP BY c.norm
             ) g
             """,
@@ -564,7 +564,7 @@ def claims_overlap(
         dist = conn.execute(
             f"""
             SELECT cnt, count(*) AS norms FROM (
-                SELECT count(*) AS cnt FROM claims c
+                SELECT count(*) AS cnt FROM thoughts c
                 WHERE {cond} GROUP BY c.norm
             ) g GROUP BY cnt ORDER BY cnt
             """,
@@ -573,18 +573,18 @@ def claims_overlap(
     unique_occ = total_occ - rep_occ_count
     return {
         "total_occurrences": total_occ,
-        "unique_claims": uniq,
-        "repeated_claims": rep_occ,
+        "unique_thoughts": uniq,
+        "repeated_thoughts": rep_occ,
         "unique_occurrences": unique_occ,
         "repeated_occurrences": rep_occ_count,
         "overlap_ratio": round(rep_occ_count / total_occ, 4) if total_occ else 0.0,
         "max_occurrences": max_occ,
-        "distribution": [{"occurrences": r[0], "claims": r[1]} for r in dist],
+        "distribution": [{"occurrences": r[0], "thoughts": r[1]} for r in dist],
     }
 
 
-@app.get("/api/claims/aggregated")
-def list_claims_aggregated(
+@app.get("/api/thoughts/aggregated")
+def list_thoughts_aggregated(
     label_id: int | None = Query(default=None),
     run_id: str | None = Query(default=None),
     q: str | None = Query(default=None),
@@ -601,7 +601,7 @@ def list_claims_aggregated(
         params.append(run_id)
     if q:
         where.append("c.norm LIKE %s")
-        params.append(f"%{claims.normalize(q)}%")
+        params.append(f"%{thoughts.normalize(q)}%")
     cond = " AND ".join(where)
     with pool.connection() as conn:
         rows = conn.execute(
@@ -612,7 +612,7 @@ def list_claims_aggregated(
                    count(DISTINCT c.label_id)     AS labels,
                    count(DISTINCT c.run_id)       AS runs,
                    max(c.text)                    AS example
-            FROM claims c
+            FROM thoughts c
             WHERE {cond}
             GROUP BY c.norm
             HAVING count(*) >= %s
@@ -624,7 +624,7 @@ def list_claims_aggregated(
         total = conn.execute(
             f"""
             SELECT count(*) FROM (
-                SELECT c.norm FROM claims c
+                SELECT c.norm FROM thoughts c
                 WHERE {cond}
                 GROUP BY c.norm HAVING count(*) >= %s
             ) g
@@ -643,37 +643,37 @@ def list_claims_aggregated(
     }
 
 
-# -------------------------------------------------------------- Clusters ----
+# -------------------------------------------------------------- Ideas ----
 
-@app.get("/api/claims/clusters/status")
-def cluster_status():
+@app.get("/api/thoughts/ideas/status")
+def idea_status():
     with pool.connection() as conn:
-        clusters_ok = conn.execute(
-            "SELECT count(*) FROM claim_clusters"
+        ideas_count = conn.execute(
+            "SELECT count(*) FROM ideas"
         ).fetchone()[0]
         last = conn.execute(
-            "SELECT max(created_at) FROM claim_clusters"
+            "SELECT max(created_at) FROM ideas"
         ).fetchone()[0]
     return {
-        "computed": clusters_ok > 0,
-        "clusters": clusters_ok,
+        "computed": ideas_count > 0,
+        "ideas": ideas_count,
         "last": last.isoformat() if last else None,
         "model_available": embeddings.available(),
     }
 
 
-@app.post("/api/claims/clusters")
-def compute_clusters(
+@app.post("/api/thoughts/ideas")
+def compute_ideas(
     threshold: float = Query(default=0.8, ge=0.0, le=1.0),
 ):
-    """Recompute semantic clusters over all distinct normalized claims."""
+    """Recompute semantic Ideas over all distinct normalized thoughts."""
     with pool.connection() as conn:
-        norms = [r[0] for r in conn.execute("SELECT DISTINCT norm FROM claims").fetchall()]
+        norms = [r[0] for r in conn.execute("SELECT DISTINCT norm FROM thoughts").fetchall()]
     if not norms:
-        raise HTTPException(status_code=400, detail="no claims to cluster")
-    clusters_list, failed = clusters.cluster_norms(norms, threshold=threshold)
+        raise HTTPException(status_code=400, detail="no thoughts to cluster")
+    ideas_list, failed = ideas.build_ideas(norms, threshold=threshold)
     with pool.connection() as conn:
-        stats = clusters.store_clusters(conn, clusters_list, threshold)
+        stats = ideas.store_ideas(conn, ideas_list, threshold)
     return {
         "norms": len(norms),
         "failed": failed,
@@ -682,8 +682,8 @@ def compute_clusters(
     }
 
 
-@app.get("/api/claims/clusters")
-def list_clusters(
+@app.get("/api/thoughts/ideas")
+def list_ideas(
     min_size: int = Query(default=2, ge=2),
     limit: int = Query(default=50, ge=1, le=500),
     offset: int = Query(default=0, ge=0),
@@ -693,15 +693,15 @@ def list_clusters(
             """
             SELECT cl.id, cl.size, cl.threshold, cl.created_at,
                    array_agg(cnc.norm ORDER BY cnc.norm) AS norms
-            FROM claim_clusters cl
-            JOIN claim_norm_cluster cnc ON cnc.cluster_id = cl.id
+            FROM ideas cl
+            JOIN thought_idea cnc ON cnc.idea_id = cl.id
             GROUP BY cl.id
             ORDER BY cl.size DESC, cl.id
             LIMIT %s OFFSET %s
             """,
             (limit, offset),
         ).fetchall()
-        total = conn.execute("SELECT count(*) FROM claim_clusters").fetchone()[0]
+        total = conn.execute("SELECT count(*) FROM ideas").fetchone()[0]
     return {
         "total": total,
         "items": [

@@ -1,10 +1,10 @@
-"""Reasoning-claim normalization, storage, and sync/backfill logic.
+"""Reasoning-thought normalization, storage, and sync/backfill logic.
 
 A "reasoning" is a collection of statements an agent produces explaining why a
-sentence carries a label. Each individual statement is a "claim". This module
-normalizes claim text into a canonical key (for overlap/duplicate detection)
-and maintains a `claims` table plus a `claims_sync` watermark so we can tell
-when new reasonings are out of sync with their extracted claims.
+sentence carries a label. Each individual statement is a "thought". This module
+normalizes thought text into a canonical key (for overlap/duplicate detection)
+and maintains a `thoughts` table plus a `thoughts_sync` watermark so we can tell
+when new reasonings are out of sync with their extracted thoughts.
 """
 
 import re
@@ -40,18 +40,18 @@ def _get_lemmatizer():
 _TOKEN_RE = re.compile(r"[a-zA-Z]+|\d+(?:[.,]\d+)*")
 
 
-def normalize(claim, lemmatize=True):
-    """Return a canonical, comparable form of a claim.
+def normalize(thought, lemmatize=True):
+    """Return a canonical, comparable form of a thought.
 
     Pipeline: NFKC -> casefold -> tokenize words/numbers -> strip thousands
     commas -> (optional) lemmatize words -> join with single spaces.
 
     Meaningful numeric values are preserved (not collapsed to a placeholder),
-    so threshold/amount claims are not over-merged.
+    so threshold/amount thoughts are not over-merged.
     """
-    if not claim:
+    if not thought:
         return ""
-    text = unicodedata.normalize("NFKC", claim).casefold()
+    text = unicodedata.normalize("NFKC", thought).casefold()
     tokens = _TOKEN_RE.findall(text)
     out = []
     for tok in tokens:
@@ -70,7 +70,7 @@ def normalize(claim, lemmatize=True):
 
 SCHEMA_DDL = [
     """
-    CREATE TABLE IF NOT EXISTS claims (
+    CREATE TABLE IF NOT EXISTS thoughts (
         id           BIGSERIAL PRIMARY KEY,
         reasoning_id INTEGER NOT NULL REFERENCES reasonings(id) ON DELETE CASCADE,
         sentence_id  INTEGER NOT NULL,
@@ -82,17 +82,17 @@ SCHEMA_DDL = [
         UNIQUE (reasoning_id, pos)
     )
     """,
-    "CREATE INDEX IF NOT EXISTS claims_norm_idx ON claims (norm)",
-    "CREATE INDEX IF NOT EXISTS claims_reasoning_id_idx ON claims (reasoning_id)",
-    "CREATE INDEX IF NOT EXISTS claims_run_id_idx ON claims (run_id)",
-    "CREATE INDEX IF NOT EXISTS claims_label_id_idx ON claims (label_id)",
+    "CREATE INDEX IF NOT EXISTS thoughts_norm_idx ON thoughts (norm)",
+    "CREATE INDEX IF NOT EXISTS thoughts_reasoning_id_idx ON thoughts (reasoning_id)",
+    "CREATE INDEX IF NOT EXISTS thoughts_run_id_idx ON thoughts (run_id)",
+    "CREATE INDEX IF NOT EXISTS thoughts_label_id_idx ON thoughts (label_id)",
     """
-    CREATE TABLE IF NOT EXISTS claims_sync (
+    CREATE TABLE IF NOT EXISTS thoughts_sync (
         id                INTEGER PRIMARY KEY DEFAULT 1 CHECK (id = 1),
         last_reasoning_id BIGINT NOT NULL DEFAULT 0
     )
     """,
-    "INSERT INTO claims_sync (id) VALUES (1) ON CONFLICT (id) DO NOTHING",
+    "INSERT INTO thoughts_sync (id) VALUES (1) ON CONFLICT (id) DO NOTHING",
 ]
 
 
@@ -102,13 +102,13 @@ def ensure_schema(conn):
 
 
 def watermark(conn):
-    row = conn.execute("SELECT last_reasoning_id FROM claims_sync WHERE id = 1").fetchone()
+    row = conn.execute("SELECT last_reasoning_id FROM thoughts_sync WHERE id = 1").fetchone()
     return row[0] if row else 0
 
 
 def _set_watermark(conn, reasoning_id):
     conn.execute(
-        "UPDATE claims_sync SET last_reasoning_id = GREATEST(last_reasoning_id, %s) WHERE id = 1",
+        "UPDATE thoughts_sync SET last_reasoning_id = GREATEST(last_reasoning_id, %s) WHERE id = 1",
         (reasoning_id,),
     )
 
@@ -116,10 +116,10 @@ def _set_watermark(conn, reasoning_id):
 # ------------------------------------------------------------- insert/backfill ----
 
 def insert_for_reasoning(conn, reasoning_id, sentence_id, label_id, run_id, parsed):
-    """Insert claim rows for one parsed reasoning. Caller owns the transaction.
+    """Insert thought rows for one parsed reasoning. Caller owns the transaction.
 
-    Returns number of claims inserted. Assumes the reasoning row is not yet in
-    the claims table (UNIQUE (reasoning_id, pos) protects us regardless)."""
+    Returns number of thoughts inserted. Assumes the reasoning row is not yet in
+    the thoughts table (UNIQUE (reasoning_id, pos) protects us regardless)."""
     if not parsed:
         return 0
     rows = [
@@ -129,7 +129,7 @@ def insert_for_reasoning(conn, reasoning_id, sentence_id, label_id, run_id, pars
     for row in rows:
         conn.execute(
             """
-            INSERT INTO claims (reasoning_id, sentence_id, label_id, run_id, pos, text, norm)
+            INSERT INTO thoughts (reasoning_id, sentence_id, label_id, run_id, pos, text, norm)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT (reasoning_id, pos) DO NOTHING
             """,
@@ -140,7 +140,7 @@ def insert_for_reasoning(conn, reasoning_id, sentence_id, label_id, run_id, pars
 
 
 def backfill(conn, batch_size=500):
-    """Extract claims for reasonings newer than the watermark, in batches.
+    """Extract thoughts for reasonings newer than the watermark, in batches.
 
     Runs inside the caller's transaction. Returns
     {processed, inserted, remaining, total_pending}."""
