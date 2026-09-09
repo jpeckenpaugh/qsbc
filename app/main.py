@@ -313,9 +313,13 @@ def create_reasoning(body: ReasoningIn):
     return {"id": row[0], "parse_status": status, "parsed": parsed}
 
 
-def build_prompt_input(sentence_id: int, label_id: int | None):
-    """Assemble the INPUT payload: Sentence, Label, and Document = all
-    single-label sentences in the same document carrying the same label."""
+def build_prompt_input(sentence_id: int, label_id: int | None, doc_limit: int | None = None):
+    """Assemble the INPUT payload: Sentence, Label, and Document.
+
+    Document = every single-label sentence in the same document carrying the
+    same label, in document order. When doc_limit is set and the group is
+    larger, a centered window around the target sentence is returned (target
+    always included)."""
     with pool.connection() as conn:
         sent = conn.execute(
             """
@@ -345,9 +349,9 @@ def build_prompt_input(sentence_id: int, label_id: int | None):
             label_name = label_name[0] if label_name else None
         if label_id is None or label_name is None:
             return None
-        doc_sentences = conn.execute(
+        doc_rows = conn.execute(
             """
-            SELECT v.text
+            SELECT v.sentence_id, v.text
             FROM v_single_label_sentences v
             WHERE v.doc_id = (SELECT doc_id FROM sentences WHERE id = %s)
               AND v.label_id = %s
@@ -356,15 +360,24 @@ def build_prompt_input(sentence_id: int, label_id: int | None):
             (sentence_id, label_id),
         ).fetchall()
         doc_key = sent[2]
+    doc_ids = [r[0] for r in doc_rows]
+    doc_texts = [r[1] for r in doc_rows]
+    doc_total = len(doc_texts)
+    if doc_limit is not None and doc_total > doc_limit and sentence_id in doc_ids:
+        pos = doc_ids.index(sentence_id)
+        half = doc_limit // 2
+        start = max(0, min(pos - half, doc_total - doc_limit))
+        doc_texts = doc_texts[start:start + doc_limit]
     return {
         "sentence_id": sentence_id,
         "doc_key": doc_key,
         "label_id": label_id,
         "label": label_name,
+        "doc_total": doc_total,
         "payload": {
             "Sentence": sent[1],
             "Label": label_name,
-            "Document": [r[0] for r in doc_sentences],
+            "Document": doc_texts,
         },
     }
 
@@ -400,6 +413,7 @@ def get_random_prompt(
     min_n: int = Query(default=2, ge=1, le=10),
     max_n: int = Query(default=5, ge=1, le=10),
     generalize: bool = Query(default=True),
+    doc_limit: int | None = Query(default=None, ge=1, le=100),
 ):
     with pool.connection() as conn:
         row = conn.execute(
@@ -413,7 +427,8 @@ def get_random_prompt(
         ).fetchone()
     if row is None:
         raise HTTPException(status_code=404, detail="not found")
-    return get_prompt(row[0], label_id=row[1], min_n=min_n, max_n=max_n, generalize=generalize)
+    return get_prompt(row[0], label_id=row[1], min_n=min_n, max_n=max_n,
+                      generalize=generalize, doc_limit=doc_limit)
 
 
 @app.get("/api/prompt/{sentence_id}")
@@ -423,8 +438,9 @@ def get_prompt(
     min_n: int = Query(default=2, ge=1, le=10),
     max_n: int = Query(default=5, ge=1, le=10),
     generalize: bool = Query(default=True),
+    doc_limit: int | None = Query(default=None, ge=1, le=100),
 ):
-    info = build_prompt_input(sentence_id, label_id)
+    info = build_prompt_input(sentence_id, label_id, doc_limit=doc_limit)
     if info is None:
         return {"error": "not found"}
     return {

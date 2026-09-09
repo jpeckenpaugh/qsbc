@@ -97,8 +97,8 @@ def backoff(attempt, base, cap):
     return delay * (0.5 + random.random())  # jitter
 
 
-def sample_tasks(per_label, label_id=None):
-    """Yield (sentence_id, label_id, payload) for one batch, deduped."""
+def sample_tasks(per_label, label_id=None, doc_limit=None, debug=False):
+    """Yield task dicts {sentence_id, label_id, payload, doc_total}, deduped."""
     if label_id is not None:
         labels = [{"id": label_id}]
     else:
@@ -112,15 +112,28 @@ def sample_tasks(per_label, label_id=None):
         while got < per_label and tries < per_label * 10:
             tries += 1
             try:
-                d = api_get(f"/api/prompt/random?label_id={label['id']}")
+                url = f"/api/prompt/random?label_id={label['id']}"
+                if doc_limit is not None:
+                    url += f"&doc_limit={doc_limit}"
+                d = api_get(url)
             except Exception:
                 continue
             key = d["sentence_id"]
             if key in seen:
                 continue
             seen.add(key)
-            tasks.append((d["sentence_id"], d["label_id"], d["payload"]))
+            task = {
+                "sentence_id": d["sentence_id"],
+                "label_id": d["label_id"],
+                "payload": d["payload"],
+                "doc_total": d.get("doc_total"),
+                "doc_used": len(d["payload"]["Document"]),
+            }
+            tasks.append(task)
             got += 1
+            if debug:
+                print(f"  [sample] #{task['sentence_id']} label={task['label_id']} "
+                      f"doc={task['doc_used']}/{task['doc_total']}", file=sys.stderr)
         if got < per_label:
             print(f"  [warn] label {label['id']}: only {got}/{per_label} unique samples", file=sys.stderr)
     return tasks
@@ -152,9 +165,11 @@ class BatchState:
         return False
 
 
-def invoke(sentence_id, label_id, payload, run_id, state, runner, max_retries,
-           backoff_base, backoff_cap, dry_run=False):
-    """Run the cot agent for one payload with retry/backoff; return a result dict."""
+def invoke(task, run_id, state, runner, max_retries, backoff_base, backoff_cap, dry_run=False):
+    """Run the cot agent for one task with retry/backoff; return a result dict."""
+    sentence_id = task["sentence_id"]
+    label_id = task["label_id"]
+    payload = task["payload"]
     payload_json = json.dumps(payload, ensure_ascii=False)
     if dry_run:
         return {"sentence_id": sentence_id, "label_id": label_id,
@@ -163,6 +178,7 @@ def invoke(sentence_id, label_id, payload, run_id, state, runner, max_retries,
         return {"sentence_id": sentence_id, "label_id": label_id,
                 "run_id": run_id, "status": "stopped", "raw_response": "", "post": None}
 
+    start = time.time()
     for attempt in range(max_retries + 1):
         try:
             proc = subprocess.run(
@@ -179,7 +195,8 @@ def invoke(sentence_id, label_id, payload, run_id, state, runner, max_retries,
                 "run_id": run_id, "model": MODEL, "raw_response": raw,
             })
             return {"sentence_id": sentence_id, "label_id": label_id, "run_id": run_id,
-                    "status": "generated", "raw_response": raw, "post": post}
+                    "status": "generated", "raw_response": raw, "post": post,
+                    "elapsed": round(time.time() - start, 1)}
 
         err = (proc.stderr if proc else "") + (proc.stdout if proc else "")
         throttled = is_throttled(err)
@@ -187,19 +204,22 @@ def invoke(sentence_id, label_id, payload, run_id, state, runner, max_retries,
             if state.note_throttle():
                 return {"sentence_id": sentence_id, "label_id": label_id,
                         "run_id": run_id, "status": "stopped",
-                        "raw_response": "", "post": None, "reason": "quota throttled"}
+                        "raw_response": "", "post": None, "reason": "quota throttled",
+                        "elapsed": round(time.time() - start, 1)}
             print(f"  [throttle] #{sentence_id} attempt {attempt + 1}; backing off", file=sys.stderr)
         elif attempt == max_retries:
             state.note_error()
             return {"sentence_id": sentence_id, "label_id": label_id, "run_id": run_id,
                     "status": "error", "raw_response": "", "post": None,
-                    "reason": err[:200] or "no output"}
+                    "reason": err[:200] or "no output",
+                    "elapsed": round(time.time() - start, 1)}
 
         time.sleep(backoff(attempt, backoff_base, backoff_cap))
 
     state.note_error()
     return {"sentence_id": sentence_id, "label_id": label_id, "run_id": run_id,
-            "status": "error", "raw_response": "", "post": None, "reason": "retries exhausted"}
+            "status": "error", "raw_response": "", "post": None,
+            "reason": "retries exhausted", "elapsed": round(time.time() - start, 1)}
 
 
 def main():
@@ -217,19 +237,34 @@ def main():
     ap.add_argument("--backoff-max", type=float, default=60.0)
     ap.add_argument("--stop-after-throttles", type=int, default=5)
     ap.add_argument("--max-errors", type=int, default=10)
+    ap.add_argument("--doc-limit", type=int, default=15,
+                    help="cap Document array to a centered window of this many "
+                         "same-label sentences (target always included)")
+    ap.add_argument("--debug", action="store_true", help="verbose, unbuffered progress output")
     ap.add_argument("--dry-run", action="store_true", help="sample + print, don't run agents")
     args = ap.parse_args()
+
+    sys.stdout.reconfigure(line_buffering=True)  # live progress under -T
 
     run_id = args.batch or f"batch-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
     print(f"run_id: {run_id}")
 
     print("Sampling...")
-    tasks = sample_tasks(args.per_label, args.label)
-    print(f"Sampled {len(tasks)} tasks")
+    tasks = sample_tasks(args.per_label, args.label, args.doc_limit, args.debug)
+    print(f"Sampled {len(tasks)} tasks (doc_limit={args.doc_limit})")
+
+    if args.debug:
+        try:
+            before = api_get("/api/stats")["reasonings"]
+            print(f"  reasonings before: {before} -> {before + len(tasks)} after (target)")
+        except Exception as e:
+            print(f"  [warn] could not fetch reasonings count: {e}", file=sys.stderr)
 
     if args.dry_run:
-        for sid, lid, payload in tasks:
-            print(f"  #{sid} label={lid} :: {json.dumps(payload, ensure_ascii=False)[:120]}...")
+        for t in tasks:
+            print(f"  #{t['sentence_id']} label={t['label_id']} "
+                  f"doc={t['doc_used']}/{t['doc_total']} :: "
+                  f"{json.dumps(t['payload'], ensure_ascii=False)[:120]}...")
         return
 
     state = BatchState(args.stop_after_throttles, args.max_errors)
@@ -240,17 +275,20 @@ def main():
     results = []
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
         futures = [
-            pool.submit(invoke, sid, lid, payload, run_id, state, args.runner,
+            pool.submit(invoke, t, run_id, state, args.runner,
                         args.max_retries, args.backoff_base, args.backoff_max)
-            for sid, lid, payload in tasks
+            for t in tasks
         ]
         done = 0
         for f in futures:
             r = f.result()
             results.append(r)
             done += 1
-            print(f"  [{done}/{len(futures)}] #{r['sentence_id']} {r['status']} "
+            extra = f" {r['elapsed']}s" if r.get("elapsed") is not None else ""
+            print(f"  [{done}/{len(futures)}] #{r['sentence_id']} {r['status']}{extra} "
                   f"-> {r.get('post', {}).get('parse_status', '-')}")
+            if args.debug and r["status"] in ("error", "stopped"):
+                print(f"      reason: {r.get('reason', '')[:300]!r}")
             if state.stop.is_set() and done < len(futures):
                 print("  [auto-stop] quota/error threshold hit; cancelling remaining jobs", file=sys.stderr)
 
@@ -265,6 +303,11 @@ def main():
     print(f"stored/verified: {stored}/{len(tasks)}")
     if state.stop.is_set():
         print("[auto-stop] batch stopped early by quota/error policy")
+    try:
+        now = api_get("/api/stats")["reasonings"]
+        print(f"reasonings total now: {now}")
+    except Exception:
+        pass
     fails = [r for r in results if r["status"] in ("error", "stopped")]
     if fails:
         print(f"not-stored ({len(fails)}):")

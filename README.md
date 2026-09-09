@@ -127,6 +127,12 @@ POSTs raw responses, and reports parse_status. `--label <id>` restricts to one
 label, `--batch <run_id>` names the run (default `batch-<ts>`), `--dry-run`
 samples without running.
 
+- `--doc-limit 15` (default) caps the `Document` array to a centered window of
+  same-label sentences around the target (target always included; small groups
+  untouched) — bounds prompt size and cost. Pass `--doc-limit 0` for unlimited.
+- `--debug` prints verbose, unbuffered progress (sample sizes, per-run timing,
+  failure reasons) and works under `docker compose exec -T`.
+
 Resilience policy (OpenCode Go subscription limits):
 - `--max-retries 3` per job with exponential backoff (+jitter,
   `--backoff-base 5s` → `--backoff-max 60s`)
