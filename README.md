@@ -142,6 +142,19 @@ Resilience policy (OpenCode Go subscription limits):
 - duplicate inserts are ignored (HTTP 409), so a stopped batch can be resumed
   with the same `--batch` id
 
+### Standalone Colab batch (local model)
+
+[`notebooks/cot_batch_colab.ipynb`](notebooks/cot_batch_colab.ipynb) runs the
+same Phase-1 generation against a **local** model (e.g. Gemma 4 via Ollama)
+directly in Colab — no FastAPI/Postgres/opencode needed. It clones the repo +
+C3PA dataset, runs `scripts/parse_c3pa.py`, builds `(Sentence, Label,
+Document)` payloads with `app/promptlib` (byte-identical to the API-driven
+batches), prompts the model with 4 concurrent workers, and writes a
+`results_<run_id>.json` for download. Regenerate the notebook with
+`python3 scripts/build_colab_notebook.py`.
+
+The JSON output can be re-imported into the local `reasonings` table.
+
 ## Concept alphabet raw material
 
 The unique reasoning statements across all agent runs are the Phase 2

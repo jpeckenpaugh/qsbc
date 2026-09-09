@@ -9,6 +9,7 @@ from psycopg.errors import UniqueViolation
 
 from app.db import connect
 from app.extract import extract_json_array
+from app.promptlib import build_payload, render_prompt
 
 app = FastAPI(title="C3PA Explorer", version="0.1.0")
 pool = connect()
@@ -362,49 +363,15 @@ def build_prompt_input(sentence_id: int, label_id: int | None, doc_limit: int | 
         doc_key = sent[2]
     doc_ids = [r[0] for r in doc_rows]
     doc_texts = [r[1] for r in doc_rows]
-    doc_total = len(doc_texts)
-    if doc_limit is not None and doc_total > doc_limit and sentence_id in doc_ids:
-        pos = doc_ids.index(sentence_id)
-        half = doc_limit // 2
-        start = max(0, min(pos - half, doc_total - doc_limit))
-        doc_texts = doc_texts[start:start + doc_limit]
+    target_index = doc_ids.index(sentence_id) if sentence_id in doc_ids else -1
     return {
         "sentence_id": sentence_id,
         "doc_key": doc_key,
         "label_id": label_id,
         "label": label_name,
-        "doc_total": doc_total,
-        "payload": {
-            "Sentence": sent[1],
-            "Label": label_name,
-            "Document": doc_texts,
-        },
+        "doc_total": len(doc_texts),
+        "payload": build_payload(sent[1], label_name, doc_texts, target_index, doc_limit),
     }
-
-
-def render_prompt(payload: dict, min_n: int, max_n: int, generalize: bool):
-    import json as _json
-
-    lines = [
-        f"Examine the supplied INPUT. Explain why the `Sentence` from the given "
-        f"`Document` carries the given `Label`. Simulate a chain-of-thought: "
-        f"{min_n}-{max_n} statements of reasoning. Respond with ONLY a JSON array of strings."
-    ]
-    if generalize:
-        lines.append(
-            "\nPhrase each statement as a general reasoning principle — one that would "
-            "apply to any `Sentence` exhibiting the same features, not an observation "
-            "about this specific `Sentence` and/or `Document`."
-        )
-    lines.append("\nINPUT:")
-    lines.append("```json")
-    lines.append(_json.dumps(payload["payload"], indent=2, ensure_ascii=False))
-    lines.append("```")
-    lines.append(
-        f"\nOUTPUT: a JSON array of {min_n}-{max_n} distinct, self-contained statements. "
-        "Nothing else — no preamble, no markdown."
-    )
-    return "\n".join(lines)
 
 
 @app.get("/api/prompt/random")
@@ -448,7 +415,7 @@ def get_prompt(
         "min": min_n,
         "max": max_n,
         "generalize": generalize,
-        "prompt": render_prompt(info, min_n, max_n, generalize),
+        "prompt": render_prompt(info["payload"], min_n, max_n, generalize),
     }
 
 

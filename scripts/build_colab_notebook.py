@@ -1,0 +1,244 @@
+#!/usr/bin/env python3
+"""Build notebooks/cot_batch_colab.ipynb (standalone Colab batch runner)."""
+import json
+
+MD = "markdown"
+CODE = "code"
+
+cells = []
+
+cells.append({
+    "cell_type": MD,
+    "metadata": {},
+    "source": [
+        "# C3PA QSBC — Standalone CoT Batch Runner (Colab)\n",
+        "\n",
+        "Runs the QSBC Phase-1 reasoning generation against a **local** model\n",
+        "(Gemma 4 via Ollama) directly in Colab — no FastAPI/Postgres/opencode\n",
+        "needed. The parsing and prompt construction reuse the repo's exact logic,\n",
+        "so payloads match the API-driven batches byte-for-byte.\n",
+        "\n",
+        "**Steps:** clone repo + dataset → parse → build (Sentence, Label, Document)\n",
+        "triples → prompt local model → save JSON → download.\n",
+        "\n",
+        "**Knobs at the top of each cell:** `MODEL`, `PER_LABEL`, `DOC_LIMIT`,\n",
+        "`MIN_N`/`MAX_N`, `SEED`, `RUN_ID`, `MAX_WORKERS`.\n"
+    ],
+})
+
+cells.append({
+    "cell_type": CODE,
+    "metadata": {},
+    "source": [
+        "# 1. Clone repo + dataset\n",
+        "import os, sys\n",
+        "os.chdir('/content')\n",
+        "if not os.path.exists('/content/qsbc'):\n",
+        "    !git clone -q https://github.com/jpeckenpaugh/qsbc.git qsbc\n",
+        "    !git clone -q https://github.com/MaazBinMusa/C3PA_Dataset.git qsbc/C3PA_Dataset\n",
+        "os.chdir('/content/qsbc')\n",
+        "sys.path.insert(0, '/content/qsbc')\n",
+        "print('cwd:', os.getcwd())\n",
+        "print('repo files:', sorted(os.listdir('.'))[:12])\n"
+    ],
+})
+
+cells.append({
+    "cell_type": CODE,
+    "metadata": {},
+    "source": [
+        "# 2. Parse C3PA -> data/*.tsv (exact same pipeline as the local DB)\n",
+        "!python scripts/parse_c3pa.py\n"
+    ],
+})
+
+cells.append({
+    "cell_type": CODE,
+    "metadata": {},
+    "source": [
+        "# 3. Install + start Ollama, pull model\n",
+        "import subprocess, time, os, requests\n",
+        "\n",
+        "MODEL = 'gemma4:12b'   # change as fits your GPU tier (E2B/E4B/12b/26b/31b)\n",
+        "\n",
+        "if not os.path.exists('/usr/local/bin/ollama'):\n",
+        "    !curl -fsSL https://ollama.com/install.sh | sh\n",
+        "\n",
+        "if not os.popen('pgrep -x ollama').read().strip():\n",
+        "    subprocess.Popen(['ollama', 'serve'], stdout=subprocess.DEVNULL,\n",
+        "                     stderr=subprocess.DEVNULL)\n",
+        "    for _ in range(30):\n",
+        "        try:\n",
+        "            requests.get('http://localhost:11434/api/tags', timeout=2)\n",
+        "            break\n",
+        "        except Exception:\n",
+        "            time.sleep(2)\n",
+        "\n",
+        "!ollama pull {MODEL}\n",
+        "print('model ready:', requests.get('http://localhost:11434/api/tags').json())\n"
+    ],
+})
+
+cells.append({
+    "cell_type": CODE,
+    "metadata": {},
+    "source": [
+        "# 4. Load parsed TSVs -> in-memory corpus (COPY-compatible text decoding)\n",
+        "import csv, random\n",
+        "from collections import defaultdict\n",
+        "from app.promptlib import build_payload, render_prompt\n",
+        "\n",
+        "def read_tsv(path):\n",
+        "    rows = []\n",
+        "    with open(path, newline='', encoding='utf-8') as fh:\n",
+        "        for row in csv.reader(fh, delimiter='\\t'):\n",
+        "            if not row:\n",
+        "                continue\n",
+        "            # undo COPY's backslash unescaping so text matches the local DB\n",
+        "            rows.append([c.replace('\\\\\\\\', '\\\\') for c in row])\n",
+        "    return rows\n",
+        "\n",
+        "labels   = {int(i): name for i, name in read_tsv('data/labels.tsv')}\n",
+        "documents = {int(i): {'subset': s, 'doc_key': k}\n",
+        "             for i, s, n, f, k, u in read_tsv('data/documents.tsv')}\n",
+        "sentences = {int(i): (int(d), t) for i, d, t in read_tsv('data/sentences.tsv')}\n",
+        "\n",
+        "sentence_labels = defaultdict(set)\n",
+        "for sid, lid in read_tsv('data/sentence_labels.tsv'):\n",
+        "    sentence_labels[int(sid)].add(int(lid))\n",
+        "\n",
+        "# single-label only, excluding 'Others'\n",
+        "single = {sid: next(iter(lids)) for sid, lids in sentence_labels.items()\n",
+        "          if len(lids) == 1 and labels[next(iter(lids))] != 'Others'}\n",
+        "\n",
+        "# (doc_id, label_id) -> ordered [(sentence_id, text)]  (id == document order)\n",
+        "groups = defaultdict(list)\n",
+        "for sid, lid in single.items():\n",
+        "    did, text = sentences[sid]\n",
+        "    groups[(did, lid)].append((sid, text))\n",
+        "for k in groups:\n",
+        "    groups[k].sort()\n",
+        "\n",
+        "print('single-label sentences:', len(single), '| groups:', len(groups))\n"
+    ],
+})
+
+cells.append({
+    "cell_type": CODE,
+    "metadata": {},
+    "source": [
+        "# 5. Sample per-label + build locked INPUT payloads\n",
+        "PER_LABEL = 4      # 4 x 12 labels = 48 runs\n",
+        "DOC_LIMIT = 15     # centered window over same-label sentences\n",
+        "MIN_N, MAX_N = 2, 5\n",
+        "SEED = 42\n",
+        "random.seed(SEED)\n",
+        "\n",
+        "by_label = defaultdict(list)\n",
+        "for (did, lid), items in groups.items():\n",
+        "    for sid, text in items:\n",
+        "        by_label[lid].append((sid, did, text))\n",
+        "\n",
+        "tasks, seen = [], set()\n",
+        "for lid in sorted(by_label):\n",
+        "    got = tries = 0\n",
+        "    while got < PER_LABEL and tries < PER_LABEL * 10:\n",
+        "        tries += 1\n",
+        "        sid, did, text = random.choice(by_label[lid])\n",
+        "        if sid in seen:\n",
+        "            continue\n",
+        "        seen.add(sid)\n",
+        "        ordered = groups[(did, lid)]\n",
+        "        target_index = next(i for i, (s, t) in enumerate(ordered) if s == sid)\n",
+        "        tasks.append({\n",
+        "            'sentence_id': sid,\n",
+        "            'doc_id': did,\n",
+        "            'label_id': lid,\n",
+        "            'label': labels[lid],\n",
+        "            'doc_key': documents[did]['doc_key'],\n",
+        "            'doc_total': len(ordered),\n",
+        "            'payload': build_payload(text, labels[lid],\n",
+        "                                    [t for s, t in ordered], target_index,\n",
+        "                                    DOC_LIMIT),\n",
+        "        })\n",
+        "        got += 1\n",
+        "\n",
+        "print('sampled tasks:', len(tasks))\n",
+        "print('sample payload:', json.dumps(tasks[0]['payload'], ensure_ascii=False)[:200])\n"
+    ],
+})
+
+cells.append({
+    "cell_type": CODE,
+    "metadata": {},
+    "source": [
+        "# 6. Run the batch against the local model (4 concurrent workers)\n",
+        "import requests, json\n",
+        "from concurrent.futures import ThreadPoolExecutor\n",
+        "from app.extract import extract_json_array\n",
+        "\n",
+        "RUN_ID = 'colab-gemma4-01'   # unique per batch; kept on every row\n",
+        "MAX_WORKERS = 4\n",
+        "OLLAMA_URL = 'http://localhost:11434/v1/chat/completions'\n",
+        "\n",
+        "def generate(task):\n",
+        "    prompt = render_prompt(task['payload'], min_n=MIN_N, max_n=MAX_N,\n",
+        "                           generalize=True)\n",
+        "    r = requests.post(\n",
+        "        OLLAMA_URL,\n",
+        "        json={'model': MODEL,\n",
+        "              'messages': [{'role': 'user', 'content': prompt}],\n",
+        "              'temperature': 0.05,\n",
+        "              'stream': False},\n",
+        "        timeout=600,\n",
+        "    )\n",
+        "    r.raise_for_status()\n",
+        "    raw = r.json()['choices'][0]['message']['content'].strip()\n",
+        "    status, _ = extract_json_array(raw)\n",
+        "    return {**task, 'run_id': RUN_ID, 'model': MODEL,\n",
+        "            'raw_response': raw, 'parse_status': status}\n",
+        "\n",
+        "results = []\n",
+        "with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:\n",
+        "    for i, res in enumerate(pool.map(generate, tasks), 1):\n",
+        "        results.append(res)\n",
+        "        print(f\"[{i}/{len(tasks)}] #{res['sentence_id']} \"\n",
+        "              f\"{res['label'][:35]!r} -> {res['parse_status']} \"\n",
+        "              f\"({len(res['raw_response'])} chars)\")\n",
+        "\n",
+        "from collections import Counter\n",
+        "print('parse_status:', dict(Counter(r['parse_status'] for r in results)))\n"
+    ],
+})
+
+cells.append({
+    "cell_type": CODE,
+    "metadata": {},
+    "source": [
+        "# 7. Save results to JSON and download\n",
+        "import json\n",
+        "out_path = f'results_{RUN_ID}.json'\n",
+        "with open(out_path, 'w') as fh:\n",
+        "    json.dump(results, fh, indent=2, ensure_ascii=False)\n",
+        "print('saved', out_path, 'with', len(results), 'rows')\n",
+        "\n",
+        "from google.colab import files\n",
+        "files.download(out_path)\n",
+        "\n",
+        "# Optional: also stash a copy on Drive if mounted\n",
+        "if os.path.exists('/content/drive/MyDrive'):\n",
+        "    !cp {out_path} /content/drive/MyDrive/qsbc_results/\n"
+    ],
+})
+
+notebook = {
+    "nbformat": 4,
+    "nbformat_minor": 5,
+    "metadata": {"colab": {}, "kernelspec": {"name": "python3", "display_name": "Python 3"},
+                 "language_info": {"name": "python"}},
+    "cells": cells,
+}
+
+with open("notebooks/cot_batch_colab.ipynb", "w") as fh:
+    json.dump(notebook, fh, indent=1)
+print("wrote notebooks/cot_batch_colab.ipynb with", len(cells), "cells")
