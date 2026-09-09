@@ -26,7 +26,7 @@ import threading
 import time
 import urllib.error
 import urllib.request
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 
 API = "http://localhost:8000"
@@ -181,9 +181,11 @@ def invoke(task, run_id, state, runner, max_retries, backoff_base, backoff_cap, 
     start = time.time()
     for attempt in range(max_retries + 1):
         try:
+            print(f"  [start] #{sentence_id} attempt {attempt + 1}", file=sys.stderr)
             proc = subprocess.run(
                 build_cmd(payload_json, runner),
                 capture_output=True, text=True, timeout=300, cwd=REPO_ROOT,
+                stdin=subprocess.DEVNULL,
             )
         except subprocess.TimeoutExpired:
             proc = None
@@ -280,7 +282,7 @@ def main():
             for t in tasks
         ]
         done = 0
-        for f in futures:
+        for f in as_completed(futures):
             r = f.result()
             results.append(r)
             done += 1
