@@ -1,0 +1,1243 @@
+[
+  {
+    "sentence_id": 13560,
+    "doc_id": 82,
+    "label_id": 1,
+    "label": "Categories of Personal Information Collected",
+    "doc_key": "DB_82",
+    "doc_total": 55,
+    "payload": {
+      "Sentence": "Identifiers · California Consumer Records law information · Characteristics of protected classifications under California or federal law · Audiovisual information · Professional or employment-related information · Education information · Sensitive personal information (racial or ethnic origin, health information)",
+      "Label": "Categories of Personal Information Collected",
+      "Document": [
+        "Ultimately this helps us to offer you a better website;",
+        "We may use Flash Local Storage Objects (“Flash LSOs”) to store your website preferences and to personalize your visit",
+        "Identifiers ||| California Consumer Records Law information ||| Commercial information ||| Internet or other electronic network activity ||| Geolocation data ||| Professional or employment-related information ||| Mailbox information\\n\\nName, username and password, mailing address, physical address, email address, telephone number, device ID, company, IP address ||| Name, username and password, mailing address, physical address, email address, telephone number, employment ||| Use of Klarity by DemandScience, interest in using or purchasing other products and service we may offer ||| Browsing history, clickstream data, browser and operating system type, navigation paths, data/time stamps, cookie identifiers, and other information about device characteristics and how you interact with ReplyForce by DemandScience ||| Device location, geolocation, IP address ||| Occupation, title, employer, business mailing address, business email address, business telephone number ||| Emails you have sent or received",
+        "Communicate with you · Provide and enhance Klarity by DemandScience · Detect and prevent fraud · Update our database of business contact information · Market, advertise, or promote Klarity by DemandScience or our other products and services",
+        "Update our database of business contact information",
+        "See Section 9, “Our Use of Cookies and Other Tracking Technologies” for more information. · Internet or other electronic network activity\\nGeolocation data",
+        "Identifiers ||| California Consumer Records law information ||| Characteristics of protected classifications under California or federal law ||| Financial information ||| Internet or other electronic network activity ||| Geolocation information ||| Audiovisual information ||| Professional or employment-related information ||| Education information ||| Inference information ||| Sensitive personal information",
+        "Name, address, email address, phone number, social security number, online identifier ||| Name, social security number, address, telephone number, passport number, driver’s license or state identification card number, education, employment, employment history, bank account number, other financial information, medical information, health insurance information ||| Gender, race, ethnicity, veteran status, disability status, sexual orientation, national origin, criminal records ||| Bank account information ||| Network activity, network connections, IP address ||| IP geolocation ||| Recording of calls or meetings, headshots, sales presentations ||| Job titles, compensation, professional experience, employment history, references, education, degrees ||| Educational institutions attended, dates of attendance, degrees granted ||| Inferences about a job applicant’s or employee’s preferences, characteristics, psychological trends, predispositions, behavior, attitudes, intelligence, abilities, and aptitudes ||| · Social Security number, driver’s license number, passport number, or state-issued identification card number · Racial or ethnic origin Health information for purposes of ADA reasonable accommodations",
+        "Communicate with job applicants and employees · Make employment and compensation decisions Comply with applicable law",
+        "Provide employee benefits and compensation",
+        "Detect and prevent fraud and malicious activity · Ensure network and information security and compliance with our IT and data privacy and security policies",
+        "Record keeping of meetings as business records",
+        "Identifiers · California Consumer Records law information · Characteristics of protected classifications under California or federal law · Audiovisual information · Professional or employment-related information · Education information · Sensitive personal information (racial or ethnic origin, health information)",
+        "Information or other electronic network activity · Geolocation information",
+        "Inference information · Sensitive personal information (Social Security number, driver’s license number, passport number, or state-issued identification card number, health information)"
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"An enumeration of specific data types and attributes serves to define the various categories of information being handled.\",\n  \"The presence of distinct descriptors, such as identifiers or sensitive information, constitutes a classification of collected data.\",\n  \"A sequence of various personal attributes and identifiers inherently represents the categories of personal information being processed.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 14674,
+    "doc_id": 93,
+    "label_id": 1,
+    "label": "Categories of Personal Information Collected",
+    "doc_key": "DB_93",
+    "doc_total": 47,
+    "payload": {
+      "Sentence": "When you contact us or submit an inquiry via the Sites, we may collect personal contact information from you, which may include your name, address, email address, and phone number.",
+      "Label": "Categories of Personal Information Collected",
+      "Document": [
+        "When you contact us or submit an inquiry via the Sites, we may collect personal contact information from you, which may include your name, address, email address, and phone number.",
+        "We may use that information for internal purposes, including, among other things, to respond to your inquiries.",
+        "We collect Analytics using certain technologies, such as:\\n\\nCookies are small data files that have unique identifiers and reside, among other places, on your Devices, and on the web pages of the Sites.",
+        "Among other things, cookies help us improve and personalize your use of the Sites.",
+        "Web beacons or “pixels” are electronic images that may be used on the Sites or in emails we send to you.",
+        "We use web beacons to deliver cookies, count visits, understand usage and effectiveness of offers, and tell whether you open an email and act upon it.",
+        "HE DATA ELEMENTS WE COLLECT IN PROVIDING OUR SERVICES\\nWith your consent, when you have accessed or used an App or Site that uses the Services, we collect certain information, including your Personal Data as defined under the UK General Data Protection Regulation, the EU’s General Data Protection Regulation or Personal Information under the California Consumer Privacy Act, (which we refer to collectively as “Information”) about your Device and your activity and interaction with such App or Site, which may include:\\n\\nIP address\\nGeolocation and proximity of your device if location services are enabled on your device and consent has been provided to the App to access those services\\nUnique device identifiers such as advertising IDs (Google Advertiser ID or IDFA) – collectively referred to as “Mobile Ad ID”, vendor IDs and/or a pixel identifier\\nEvent information about your device, such as crashes, system activity, and hardware settings\\nSystem configuration information\\nTime and date information\\nDwell time at or near points of interest the device’s location services\\nOther device movement information such as acceleration or altitude\\nSources of Personal Information Mobile applications, Websites, Consumer Data Resellers, Business Partners\\nCategories of Personal Information collected, sold, or shared in the past 12 months Identifiers, Geolocation Data, Internet or other electronic network activity and information, Inferences drawn from Personal Information, Professional or Employment Related Information (This information is only collected or shared)",
+        "Sources of Personal Information ||| 1: Mobile applications, Websites, Consumer Data Resellers, Business Partners\\n\\n0: Categories of Personal Information collected, sold, or shared in the past 12 months ||| 1: Identifiers, Geolocation Data, Internet or other electronic network activity and information, Inferences drawn from Personal Information, Professional or Employment Related Information (This information is only collected or shared)",
+        "Cookies on this site are used by Cuebiq and our third-party partners for different purposes, including personalizing content, tailoring advertising, and measuring site traffic & performance.",
+        "CHANGES TO PRIVACY POLICY",
+        "If we make material changes to this Privacy Policy that may impact you, we will prominently post notice of the change on our website for a period of at least 30 days prior to the change becoming effective.",
+        "\\nREGULATORY AUTHORITY & CONTACTING US",
+        "Cuebiq, as a US based company, is subject to the investigatory and enforcement powers of the Federal Trade Commission (FTC).",
+        "For users in the UK, EEA and Switzerland, Cuebiq complies with the Privacy Shield Principles as well as the UK General Data Protection Regulation and the EU General Data Protection Regulation.",
+        "Cuebiq is not liable for the data handling practices of our third-party partners except for those acting as Agents on our behalf."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"A sentence that enumerates specific data points, such as names or contact details, serves to define the types of information being gathered.\",\n  \"The presence of specific identifiers or attributes within a clause indicates the classification of data categories being collected.\",\n  \"Text that explicitly lists various forms of personal identifiers is inherently descriptive of the categories of personal information processed.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 29933,
+    "doc_id": 196,
+    "label_id": 1,
+    "label": "Categories of Personal Information Collected",
+    "doc_key": "DB_196",
+    "doc_total": 97,
+    "payload": {
+      "Sentence": "Categories of Sources of Personal Information",
+      "Label": "Categories of Personal Information Collected",
+      "Document": [
+        "To otherwise communicate directly with you – In particular, if you contact us or otherwise send as a communication, we may process your personal information.",
+        "Improving the content and general administration of the Platform, including to perform system maintenance and upgrades – In particular, we may use Device, Usage and Location Information to make changes to certain features or improve the Site, or use other information derived from personal information to offer new Services or make upgrades to the Platform.",
+        "Detecting fraud, illegal activities or security breaches – In particular, we may use information such as your IP address to help us prevent abuse of the Platform and investigate any potential unauthorized use of the Platform or other security breaches.",
+        "Sending marketing communications, in line with your communication preferences",
+        "Consent (depending on location and Customer relationship) or legitimate interests",
+        "Legal obligations or claims",
+        "These features may collect your IP address and/or other information as set forth in each social platform’s privacy policy, which page you are visiting on our Site, and may set a cookie to enable the feature to function properl",
+        "Categories of Sources of Personal Information",
+        "As explained in more detail here, UpLead obtains the categories of personal information listed above from the following categories of sources:",
+        "For example, when you sign up to use the Services.",
+        "For example, from observing your actions on our Services, or from the internet (including publicly-available sources) – this includes data collected via cookies (or similar technologies) or from third parties.",
+        "Signing up for our Services\\nIf you sign up for our Services, whether as a free trial or paid subscription, we will collect personal information as follows:",
+        "This information allows us to understand the screens that you view, how you’ve used the Site and/or our Services (which may include administrative and support communications with us), and other actions on the Site.",
+        "We use this information to administer and improve the Services, analyze trends, track users’ use of the Site, and gather broad demographic information for aggregate use.",
+        "Device Information – information about the devices and software you use to access the Site – primarily the internet browser or mobile device that you use, the website or source that linked or referred you to the Site, your IP address or device ID (or other persistent identifier that uniquely identifies your computer or mobile device on the Internet), the operating system of your computer or mobile device, device screen size and other similar hardware and software information, and language preference\\nUsage Information – information about your interactions with the Site, including access dates and times, device event information, log data, crash data, and cookie data."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Headings that identify the origins or sources of data are semantically linked to the broader topic of data collection categories.\",\n  \"Phrases containing 'Categories of...' serve as thematic indicators for sections detailing the scope of information processing.\",\n  \"In privacy documentation, describing the sources of information is a fundamental part of explaining the categories of information collected.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 49415,
+    "doc_id": 340,
+    "label_id": 1,
+    "label": "Categories of Personal Information Collected",
+    "doc_key": "WS_110",
+    "doc_total": 93,
+    "payload": {
+      "Sentence": "When you visit or use our Services, we automatically collect certain information about your device (e.g., your mobile device, computer, or tablet), including information about your hardware and software, device configuration, and nearby networks.",
+      "Label": "Categories of Personal Information Collected",
+      "Document": [
+        "Cookies ||| 1: We use cookies and similar technologies to help provide our Services, offer you a more personalized user experience and market our and third parties' products and services to you.",
+        "Personal Information We Collect Directly From You.",
+        "As you visit or use our Services, we collect the following categories of personal information directly from you:\\n\\nPersonal details (such as your name, age, birthday, gender)\\nContact information (such as email address, address, phone number)\\nBooking information (such as, for each traveler, the traveler's name, frequent flyer details, passport number, redress control number, country of citizenship, booking reference number, and itinerary, which may include name of airline or carrier, hotel accommodation and/or vessel, port of destination, port of arrival, date and time of departure and/or check-in, date and time of arrival and/or check-out, meal preferences, luggage information, and layover information)\\nAccount information (such as login credentials, including email address and password, and account settings)\\nSocial media data (if you choose to link your KAYAK account with a social media account, KAYAK may collect personal information such as name, age, gender, photograph, and other personal information relating to your social media account)\\nBilling information (such as credit, debit, or other payment card information and billing address)\\nYour contacts (such as contact information of people you add to, or notify of, your reservations or itineraries through our Services)\\nYour preferences (such as your home airport, seating preferences, meal preferences, communication preferences, and other preference information you provide us)\\nReviews you submit (including any screenname you publish under or any personal information you include about yourself or others in such review)\\nContent you publish (including your travel recommendations and any personal information you include about yourself or others, or in content you publish in your Guide or other mediums provided by us)\\nPhotos of you (such as when you add a photo of yourself to your profile, upload photos to a review, or link your social media account to your KAYAK account)\\nCommunications you send us (such as questions, conversations, complaints, or other information that you may submit to our support team)\\nPromotion information (if you choose to participate in a contest, sweepstakes, or similar campaign, we will collect any information you provide in relation to such activity, such as photos, images, captions, or other content, in accordance with the terms provided at that time)\\nOther information you may provide (including other information you provide about yourself or others through our Services or to which you provide us with access via third-party platforms)",
+        "Some of the information identified above, such as your passport number, redress travel number, and citizenship information, may be considered \"sensitive personal information\" under certain laws.",
+        "Lastly, certain features of our Services may prompt your device or browser to request access to your precise geolocation information, which may be considered sensitive personal information.",
+        "We do not process precise geolocation absent you granting permission through your device or browser.",
+        "We generate the following categories of personal information about you:\\n\\nDevice information.",
+        "When you visit or use our Services, we automatically collect certain information about your device (e.g., your mobile device, computer, or tablet), including information about your hardware and software, device configuration, and nearby networks.",
+        "Such data may include data about your device operating systems, browsers, and other software installed on your device; such as IP address or other device identifier; country of origin, region and language settings; and information about domain servers and wireless or network access points near your device.\\nUsage and performance information.",
+        "We also automatically collect personal information about your usage of the Services, including information about your searches, statistics about the travel itineraries you share with us, how you interact with the features of our Services and the links you click, your preferences, access times, referring URL, and performance of our Services.",
+        "If you use our Services, we automatically collect approximate location information about you (such as your city) or, with your consent, precise geographic location data from your mobile device when the app is running and when it is not running, depending on the choices you make when you are asked to consent to our collection of location information.",
+        "We combine the information we collect, generate, or otherwise obtain to draw inferences about your preferences and interests in order to provide and personalize our Services and tailor the advertising we and our partners display or offer to you.",
+        "Emails you synchronize with your Trips account.",
+        "If you sign up to synchronize your email inbox to your Trips account, you authorize us to access the emails in the email accounts you have connected to your Trips account in order to create travel itineraries.",
+        "This involves automatically scanning your inbox at regular intervals to identify emails that are booking confirmations, which are then parsed automatically or manually for relevant travel details and imported into our Trips service (along with a copy of the email, which is saved to your Trips account)."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"A sentence that enumerates specific technical attributes or identifiers serves to define the specific categories of information being gathered.\",\n  \"Describing the automatic acquisition of data related to hardware, software, or network settings constitutes an identification of data categories.\",\n  \"Providing specific examples of data points within a description of collection processes functions to illustrate the scope of the categories of personal information collected.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 51621,
+    "doc_id": 348,
+    "label_id": 2,
+    "label": "Categories of Personal Information Shared / Disclosed",
+    "doc_key": "WS_118",
+    "doc_total": 66,
+    "payload": {
+      "Sentence": "We let senders know when you act on their message, subject to your settings where applicable.",
+      "Label": "Categories of Personal Information Shared / Disclosed",
+      "Document": [
+        "Our Services allow viewing and sharing information including through posts, likes, follows and comments.",
+        "When you share an article or a post (e.g., an update, image, video or article) publicly it can be viewed by everyone and re-shared anywhere (subject to your settings).",
+        "Members, Visitors and others will be able to find and see your publicly-shared content, including your name (and photo if you have provided one).",
+        "In a group, posts are visible to others in the group.",
+        "Your membership in groups is public and part of your profile, but you can change visibility in your settings.",
+        "Any information you share through companiesâ€™ or other organizationsâ€™ pages on our Services will be viewable by it and others who visit those pages.",
+        "When you follow a person or organization, you are visible to others and that â€œpage ownerâ€ as a follower.",
+        "We let senders know when you act on their message, subject to your settings where applicable.",
+        "Subject to your settings, we let a Member know when you view their profile.",
+        "When you like or re-share or comment on anotherâ€™s content (including ads), others will be able to view these â€œsocial actionsâ€ and associate it with you (e.g., your name, profile and photo if you provided it).",
+        "Your employer can see how you use Services they provided for your work (e.g. as a recruiter or sales agent) and related information.",
+        "We will not show them your job searches or personal messages.",
+        "Your employer may offer you access to our enterprise Services such as Recruiter, Sales Navigator, LinkedIn Learning or our advertising Campaign Manager.",
+        "Your employer can review and manage your use of such enterprise Services.",
+        "Depending on the enterprise Service, before you use such Service, we will ask for permission to share with your employer relevant data from your profile or use of our non-enterprise Services."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Descriptions of notifying third parties about user interactions constitute a disclosure of user activity data.\",\n  \"Identifying specific user behaviors that trigger notifications to others falls under the category of information being shared.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 48761,
+    "doc_id": 335,
+    "label_id": 2,
+    "label": "Categories of Personal Information Shared / Disclosed",
+    "doc_key": "WS_105",
+    "doc_total": 10,
+    "payload": {
+      "Sentence": "We may provide and disclose your information to affiliates, operators, service providers, and other third parties for the purpose of providing, offering, supporting, administering and maintaining the Services, and providing the full range of content, activities, services, features, and functions offered on or in connection with the Services.\\n\\nD.",
+      "Label": "Categories of Personal Information Shared / Disclosed",
+      "Document": [
+        "The above excludes text messaging originator opt-in data and consent; this information will not be shared with any third parties.\\n\\nB.",
+        "Disclosure of Certain Information in User Submissions Intended to Be Disclosed.",
+        "Certain information associated with a Submission may be intended for disclosure, such as your username.",
+        "We will disclose any such information in connection with the display of, and other services relating to, such Submission, and by submitting a Submission on or in connection with the Services you affirmatively consent to the distribution of your information as described herein.\\n\\nC.",
+        "Service Providers, Owners and Licensees.",
+        "We may provide and disclose your information to affiliates, operators, service providers, and other third parties for the purpose of providing, offering, supporting, administering and maintaining the Services, and providing the full range of content, activities, services, features, and functions offered on or in connection with the Services.\\n\\nD.",
+        "There may be instances when DJTFP 2024 may access or disclose information without providing you a choice in the following circumstances: (i) to protect or defend the legal rights or property of DJTFP 2024, our affiliated committees or their employees, agents and contractors (including enforcement of our agreements), (ii) to protect the safety and security of our Services and users, (iii) protect against fraud or for risk management purposes, (iv) if we believe your actions violate this Privacy Policy or Terms of Service, or (v) to comply with law or legal process.",
+        "We will disclose any such information in connection with the display of, and other services relating to, such Submission, and by submitting a Submission on or in connection with the Services you affirmatively consent to the distribution of your information as described herein.",
+        "We may provide and disclose your information to affiliates, operators, service providers, and other third parties for the purpose of providing, offering, supporting, administering and maintaining the Services, and providing the full range of content, activities, services, features, and functions offered on or in connection with the Services.",
+        "To comply with Federal election law and the regulations of the Federal Election Commission, we are required to make our best efforts to collect and report the name, mailing address, occupation, and name of employer of individuals whose contributions aggregate in excess of $200 per election cycle."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Sentences that identify the specific entities or parties to whom data is transferred are categorized under information sharing and disclosure.\",\n  \"Descriptions of the operational purposes for which data is disclosed are integral to defining the scope of information sharing practices.\",\n  \"Identifying the recipients of personal data is a primary indicator of a clause describing the disclosure of information.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 33816,
+    "doc_id": 226,
+    "label_id": 2,
+    "label": "Categories of Personal Information Shared / Disclosed",
+    "doc_key": "DB_226",
+    "doc_total": 21,
+    "payload": {
+      "Sentence": "California and Quebec, Canada Residents\\n\\nCoStar shares Personal Information with the following categories of third parties and has disclosed the following categories of Personal Information for a business or commercial purpose in the 12 months preceding the date this Global Privacy notice was last modified:\\n\\n \\n\\nPersonal Information Third Parties\\nIdentifiers Service providers, including data analytics and advertising providers, operating systems and platforms, social networks, other CoStar customers\\nCategories of personal information described in California Civil Code §1798.80(e) Service providers, other CoStar customers\\nCommercial information Affiliates, distribution partners, other CoStar customers\\nInternet or other electronic network activity information Service providers, including data analytics and advertising providers\\nGeolocation data (e.g., IP addresses) Service providers\\nProfessional or employment-related information Service providers, other CoStar customers\\nInferences Service providers, including data analytics and advertising providers\\nSensitive personal information, including biometric information, precise geolocation, login credentials, and the contents of messages sent through the Services Service providers\\n",
+      "Label": "Categories of Personal Information Shared / Disclosed",
+      "Document": [
+        "CoStar may permit these affiliates and service providers to access your Personal Information in order to assist us in providing services; however, we contractually require these vendors to keep Personal Information confidential and use it only for the purposes for which we disclose it to them.",
+        "Carrying out our legal and contractual obligations and enforcing our rights, including billing and payment processing\\nAnonymizing and aggregating information for analytics and reporting\\nAdvertising, marketing, and selling the Services, including linking together or merging Personal Information with other Personal Information so that we may better understand your needs and inform you about our Services and those of our partners",
+        "Advising clients of CoStar product enhancements and improvements\\nContacting Listing Brokers to collect listing, deal and other industry data on a monthly basis\\nEntering details into CoStar® where those details can be viewed by our subscriber base and used for marketing purposes (Personal Information may appear in the Professional Directory™, appear in the DealMakers™ section, or be attached to specific and relevant building and transactional records in CoStar®)\\nIdentifying trends, aggregating statistics, optimizing your use of the Services and providing a safer environment for purchasing in connection with your use of CoStar Property Professional®, CoStar COMPS Professional®, CoStar Tenant®, CoStar Suite® with Market Analytics, CoStar Go®, CoStar Lease Analysis®, CoStar Lease Comps™ through Google Analytics",
+        "If you are a hotel owner, or a main point of contact for a hotel company, for inclusion of your information in our inventory, pipeline and AM:PM database services, or in news articles about the industry.\\nTo undertake research on our own behalf and for a variety of clients.",
+        "Note that if you make any Personal Information publicly available on the Services, anyone may see and use such information.",
+        "ervice Providers\\n\\nCoStar retains third party service providers to assist us in our business.",
+        "Categories of personal information described in California Civil Code §1798.80(e)",
+        "Internet or other electronic network activity information",
+        "Geolocation data (e.g., IP addresses)",
+        "Professional or employment-related information",
+        "Sensitive personal information, including biometric information, precise geolocation, login credentials, and the contents of messages sent through the Services",
+        "Professional or employment-related informatio",
+        "California and Quebec, Canada Residents\\n\\nCoStar shares Personal Information with the following categories of third parties and has disclosed the following categories of Personal Information for a business or commercial purpose in the 12 months preceding the date this Global Privacy notice was last modified:\\n\\n \\n\\nPersonal Information Third Parties\\nIdentifiers Service providers, including data analytics and advertising providers, operating systems and platforms, social networks, other CoStar customers\\nCategories of personal information described in California Civil Code §1798.80(e) Service providers, other CoStar customers\\nCommercial information Affiliates, distribution partners, other CoStar customers\\nInternet or other electronic network activity information Service providers, including data analytics and advertising providers\\nGeolocation data (e.g., IP addresses) Service providers\\nProfessional or employment-related information Service providers, other CoStar customers\\nInferences Service providers, including data analytics and advertising providers\\nSensitive personal information, including biometric information, precise geolocation, login credentials, and the contents of messages sent through the Services Service providers\\n",
+        "We do not use or disclose sensitive personal information for purposes other than those specified in Cal.",
+        "Civ Code § 1798.121."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"A sentence that explicitly lists specific types of data alongside the entities receiving that data inherently describes the categories of information shared or disclosed.\",\n  \"The presence of explicit terminology regarding the sharing or disclosure of personal information with third parties identifies the subject matter as disclosure categories.\",\n  \"Mapping specific data attributes to corresponding recipient groups constitutes a detailed breakdown of information sharing practices.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 2168,
+    "doc_id": 15,
+    "label_id": 2,
+    "label": "Categories of Personal Information Shared / Disclosed",
+    "doc_key": "DB_15",
+    "doc_total": 3,
+    "payload": {
+      "Sentence": "Our website includes Social Media Features, such as the Facebook Like button and Widgets, the Share This button or interactive mini-programs that run on our website.",
+      "Label": "Categories of Personal Information Shared / Disclosed",
+      "Document": [
+        "Our website includes Social Media Features, such as the Facebook Like button and Widgets, the Share This button or interactive mini-programs that run on our website.",
+        "These features may collect your IP address, which page you are visiting on our website, and may set a cookie to enable the feature to function properly.",
+        "Social media features and widgets are either hosted by a third party or hosted directly on our website"
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Identifying specific technological features or integrations is a necessary step in defining the mechanisms through which data is shared or disclosed.\",\n  \"Describing the presence of third-party tools or interactive elements provides the context for the types of information-gathering activities occurring on a platform.\",\n  \"Specifying the components of a website's functionality helps categorize the specific channels used for the transmission of user data.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 20495,
+    "doc_id": 138,
+    "label_id": 3,
+    "label": "Categories of Personal Information Sold",
+    "doc_key": "DB_138",
+    "doc_total": 2,
+    "payload": {
+      "Sentence": "Sales of Personal Information \\n\\nIn the preceding twelve (12) months, Company has not sold personal information.",
+      "Label": "Categories of Personal Information Sold",
+      "Document": [
+        "Sales of Personal Information \\n\\nIn the preceding twelve (12) months, Company has not sold personal information.",
+        "Other than in connection with a merger, sale of Digdev assets, financing or acquisition, we will not sell or rent any of your information to third parties for their own marketing purposes."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"A sentence is categorized under a specific label if it explicitly addresses the subject matter or the occurrence of the event described by that label.\",\n  \"Statements describing the non-occurrence of an event are classified under the category that defines the parameters of that event.\",\n  \"The presence of a topical heading within a sentence determines the thematic classification of the information presented under that heading.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 39106,
+    "doc_id": 261,
+    "label_id": 3,
+    "label": "Categories of Personal Information Sold",
+    "doc_key": "WS_31",
+    "doc_total": 6,
+    "payload": {
+      "Sentence": "This helps us learn more about your interests and preferences, which we use for advertising on the Services and Third Party Sites.",
+      "Label": "Categories of Personal Information Sold",
+      "Document": [
+        "When Do We Sell or Share Personal Data?\\nCategories of data sold or shared: Categories of Vendors or Other Entities We Sell/Share data With:\\nYour contact details Social network partners and our business partners.\\nInternet activity information, inferences and online identifiers Advertising networks, data analytics vendors, social networks, and other Advertising Partners.\\n",
+        "We may use information about you, such as your email address, to identify you across the devices you use to access the Services, as well as offline.",
+        "This helps us learn more about your interests and preferences, which we use for advertising on the Services and Third Party Sites.",
+        "With Advertising Partners to customize your experience and better tailor the services, products, marketing and advertising on our Services and on their Third Party Sites.",
+        "Our Advertising Partners use third party cookies to serve ads to you and to target you with tailored (or personalized) ads when you are using the Services and when you visit Third-Party Sites",
+        "Categories of data sold or shared: Categories of Vendors or Other Entities We Sell/Share data With:\\nYour contact details Social network partners and our business partners.\\nInternet activity information, inferences and online identifiers Advertising networks, data analytics vendors, social networks, and other Advertising Partners."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Descriptions of data usage for advertising purposes often specify the types of personal information being processed or shared.\",\n  \"The mention of using user interests and preferences for third-party advertising indicates a category of personal information involved in data sharing or selling.\",\n  \"Contextualizing data usage within advertising practices allows for the identification of the specific categories of personal data being transferred to external entities.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 6306,
+    "doc_id": 37,
+    "label_id": 3,
+    "label": "Categories of Personal Information Sold",
+    "doc_key": "DB_37",
+    "doc_total": 10,
+    "payload": {
+      "Sentence": "Code § 1798.80: physical characteristics or description, education, income level and other financial information, and medical-related information\\nProtected Classifications: characteristics of protected classifications under California or federal law, such as race, color, national origin, religion, age, sex, gender, marital status, medical-related information, ancestry, and military and veteran status\\nCommercial Information: commercial information, including records of personal property, products or services purchased, obtained, or considered, and other purchasing or consuming histories or tendencies\\nOnline Activity: Internet and other electronic network activity information, including, but not limited to, browsing history, search history, and information regarding your interaction with websites, applications, or advertisements\\nGeolocation Data\\nSensory Information: audio, electronic, and similar information when you call i360 and leave a voicemail, or record such information on an i360 software application\\nEmployment Information: professional or employment-related information\\nInferences: inferences drawn from any of the information identified above to create a profile about you reflecting your preferences, characteristics, predispositions, behavior, or attitudes",
+      "Label": "Categories of Personal Information Sold",
+      "Document": [
+        "In connection with certain of our products and services, we may sell certain personal information we obtain about you for monetary consideration.",
+        "Notice of Collection and Use of Personal Information\\ni360 collects information from government and other sources.",
+        "Code § 1798.80: physical characteristics or description, education, income level and other financial information, and medical-related information\\nProtected Classifications: characteristics of protected classifications under California or federal law, such as race, color, national origin, religion, age, sex, gender, marital status, medical-related information, ancestry, and military and veteran status\\nCommercial Information: commercial information, including records of personal property, products or services purchased, obtained, or considered, and other purchasing or consuming histories or tendencies\\nOnline Activity: Internet and other electronic network activity information, including, but not limited to, browsing history, search history, and information regarding your interaction with websites, applications, or advertisements\\nGeolocation Data\\nSensory Information: audio, electronic, and similar information when you call i360 and leave a voicemail, or record such information on an i360 software application\\nEmployment Information: professional or employment-related information\\nInferences: inferences drawn from any of the information identified above to create a profile about you reflecting your preferences, characteristics, predispositions, behavior, or attitudes",
+        "Third-party vendors who provide services on our behalf\\n\\nIdentifiers\\nAdditional Data Subject to §1798.80\\nProtected Classifications\\nCommercial Information\\nOnline Activity\\nGeolocation Data\\nEmployment Information\\nInferences",
+        "Marketing partners (including network advertising companies, publishers, and business partners)\\n\\nIdentifiers\\nAdditional Data Subject to §1798.80\\nProtected Classifications\\nCommercial Information\\nOnline Activity\\nGeolocation Data\\nEmployment Information\\nInferences",
+        "Consumer data vendors\\n\\nIdentifiers\\nAdditional Data Subject to §1798.80\\nProtected Classifications\\nCommercial Information\\nOnline Activity\\nGeolocation Data\\nEmployment Information\\nInferences\\n",
+        "Sale or Sharing of Personal Information\\nIn connection with certain of our products and services, we may sell certain personal information we obtain about you for monetary consideration",
+        "Social networking services\\n\\nIdentifiers\\nAdditional Data Subject to §1798.80\\nProtected Classifications\\nCommercial Information\\nOnline Activity\\nGeolocation Data\\nEmployment Information\\nInferences",
+        "Consumer data vendors\\n\\nIdentifiers\\nAdditional Data Subject to §1798.80\\nProtected Classifications\\nCommercial Information\\nOnline Activity\\nGeolocation Data\\nEmployment Information\\nInferences",
+        "Political committees, non-profit advocacy groups, and similar organizations\\n\\nIdentifiers\\nAdditional Data Subject to §1798.80\\nProtected Classifications\\nCommercial Information\\nOnline Activity\\nGeolocation Data\\nEmployment Information\\nInferences"
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"An enumeration of specific data types and attributes serves to define the constituent elements of a broader category of information.\",\n  \"A detailed list of various identifiers, behaviors, and characteristics provides the specific sub-categories that comprise a larger set of personal data.\",\n  \"Text that itemizes specific types of information functions as a descriptive breakdown of information categories.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 23204,
+    "doc_id": 153,
+    "label_id": 3,
+    "label": "Categories of Personal Information Sold",
+    "doc_key": "DB_153",
+    "doc_total": 10,
+    "payload": {
+      "Sentence": "Code § 1798.80(e));\\n(c) protected class characteristics;\\n(d) commercial information;\\n(e) internet activity information;\\n(f) geolocation data/precise geolocation information; and\\n(g) inferences drawn from personal information to create a consumer profile.",
+      "Label": "Categories of Personal Information Sold",
+      "Document": [
+        "We partner with third party advertising companies to manage our advertising on the InMarket Applications.",
+        "Because we enable these third parties on the InMarket Applications, we may be considered to have sold data to these third parties over the past 12 months.",
+        "Sale of Personal Information\\n\\nAccording to the definitions and terms included in the California Consumer Privacy Act of 2018 and other California state privacy laws and regulations (we collectively call these laws the “CCPA”), in the past 12 months InMarket has sold its Third Party Partners some consumer personal information that falls within these categories:\\n\\n(a) personal identifiers;\\n(b) protected personal information under the California Customer Records statute (Cal.",
+        "Code § 1798.80(e));\\n(c) protected class characteristics;\\n(d) commercial information;\\n(e) internet activity information;\\n(f) geolocation data/precise geolocation information; and\\n(g) inferences drawn from personal information to create a consumer profile.",
+        "Sale of Personal Information",
+        "According to the definitions and terms included in the California Consumer Privacy Act of 2018 and other California state privacy laws and regulations (we collectively call these laws the “CCPA”), in the past 12 months InMarket has sold its Third Party Partners some consumer personal information that falls within these categories:",
+        "(c) protected class characteristics;",
+        "(e) internet activity information;",
+        "(f) geolocation data/precise geolocation information; and",
+        "(g) inferences drawn from personal information to create a consumer profile."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"A list of specific data attributes following an introductory phrase about data sales serves to enumerate the categories of information being disclosed.\",\n  \"The presence of specific identifiers such as 'geolocation data' or 'commercial information' within a structured list defines the scope of the categories being categorized.\",\n  \"Items presented in a sequential list following a statement about the sale of personal information represent the specific types of data included in those sales.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 16064,
+    "doc_id": 103,
+    "label_id": 4,
+    "label": "Description of Right to Correct Information",
+    "doc_key": "DB_103",
+    "doc_total": 3,
+    "payload": {
+      "Sentence": "Right to correct inaccurate personal information",
+      "Label": "Description of Right to Correct Information",
+      "Document": [
+        "Right to correct inaccurate personal information",
+        "Right to Rectification\\n\\nYou have the right to obtain the rectification or inaccurate personal data.",
+        "Taking into account the purposes of processing, you have the right to have incomplete personal data completed, including by means of providing a supplementary statement"
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"A sentence that explicitly names a specific entitlement and its purpose serves as a descriptive summary of that entitlement.\",\n  \"Phrases that use the structure 'Right to [action]' function as high-level descriptions of the underlying procedural rights.\",\n  \"A concise phrase that encapsulates the core subject matter of a more detailed clause can be categorized as a description of that subject.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 37563,
+    "doc_id": 251,
+    "label_id": 4,
+    "label": "Description of Right to Correct Information",
+    "doc_key": "WS_21",
+    "doc_total": 1,
+    "payload": {
+      "Sentence": "Correction \\nConsistent with applicable law, you may have the right after making a verifiable request to correct inaccurate personal information, considering the nature of the data itself and the processing activities it supports.",
+      "Label": "Description of Right to Correct Information",
+      "Document": [
+        "Correction \\nConsistent with applicable law, you may have the right after making a verifiable request to correct inaccurate personal information, considering the nature of the data itself and the processing activities it supports."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"A sentence that explicitly mentions the ability to rectify or amend inaccurate personal data inherently describes a right to correct information.\",\n  \"Outlining the procedural steps or conditions necessary to exercise a modification of data constitutes a description of the right's implementation.\",\n  \"The presence of terms related to the rectification of inaccuracies serves as a direct indicator of the subject matter being a right to correct information.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 40114,
+    "doc_id": 267,
+    "label_id": 4,
+    "label": "Description of Right to Correct Information",
+    "doc_key": "WS_37",
+    "doc_total": 2,
+    "payload": {
+      "Sentence": "Right to Request Correction.",
+      "Label": "Description of Right to Correct Information",
+      "Document": [
+        "Right to Request Correction.",
+        "You have the right to request that we correct inaccurate Personal Information we collected about you."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"A sentence that serves as a heading for a specific entitlement can be categorized by the subject matter of that entitlement.\",\n  \"When a phrase explicitly names a particular right, its label should reflect the functional description of the action associated with that right.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 51972,
+    "doc_id": 350,
+    "label_id": 4,
+    "label": "Description of Right to Correct Information",
+    "doc_key": "WS_120",
+    "doc_total": 2,
+    "payload": {
+      "Sentence": "You have the right to request that we correct inaccurate personal information that we maintain about you.",
+      "Label": "Description of Right to Correct Information",
+      "Document": [
+        "Rectify the personal information we hold about you",
+        "You have the right to request that we correct inaccurate personal information that we maintain about you."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Sentences that explicitly state an individual's entitlement to perform a specific action regarding their data function as descriptions of a right.\",\n  \"The presence of verbs related to rectification or correction in the context of personal information identifies the specific subject matter of the right being described.\",\n  \"A statement that outlines the procedure for addressing inaccuracies in personal records serves as a description of the right to correct information.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 15687,
+    "doc_id": 100,
+    "label_id": 5,
+    "label": "Description of Right to Delete",
+    "doc_key": "DB_100",
+    "doc_total": 3,
+    "payload": {
+      "Sentence": "delete certain information which we are holding about you",
+      "Label": "Description of Right to Delete",
+      "Document": [
+        "delete certain information which we are holding about you",
+        "Delete certain personal information we have about you;",
+        "Delete certain personal information we have about you; and"
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Phrases that describe the removal or erasure of data held by an organization are indicative of a right to delete.\",\n  \"The use of verbs indicating the destruction of information in relation to a user's data characterizes the description of a deletion right.\",\n  \"Content that specifies the action of deleting information held by an entity pertains to the definition of a right to erasure.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 20459,
+    "doc_id": 138,
+    "label_id": 5,
+    "label": "Description of Right to Delete",
+    "doc_key": "DB_138",
+    "doc_total": 9,
+    "payload": {
+      "Sentence": "(g) to withdraw your data protection consent to our use of your information at any time where data controller rely on your consent to use or process that information.",
+      "Label": "Description of Right to Delete",
+      "Document": [
+        "in case: (i) the personal data is no longer necessary in relation to the purposes for which it was collected or otherwise processed; (ii) the data subject withdraws consent to which the processing is based according to point (a) of Article 6(1) of the GDPR, or point (a) of Article 9(2) of the GDPR, and where there is no other legal ground for the processing; (iii) the data subject objects to the processing pursuant to Article 21(1) of the GDPR and there are no overriding legitimate grounds for the processing, or the data subject objects to the processing pursuant to Article 21(2) of the GDPR; (iv) the personal data have been unlawfully processed; (v) the personal data have been collected in relation to the offer of information society services referred to in Article 8(1) of the GDPR.",
+        "An employee of Digdev shall promptly ensure that the erasure request is complied with immediately.",
+        "(g) to withdraw your data protection consent to our use of your information at any time where data controller rely on your consent to use or process that information.",
+        "Deletion Request Rights \\n\\nYou have the right to request that Media Direct, Inc. delete any of your personal information that we collected from you and retained, subject to certain exceptions.",
+        "Once we receive and confirm your verifiable consumer request (see Exercising Access, Data Portability, and Deletion Rights), we will delete (and direct our service providers to delete) your personal information from our records, unless an exception applies.\\n\\n \\n\\nWe may deny your deletion request if retaining the information is necessary for us or our service provider(s) to:\\n\\nComplete the transaction for which we collected the personal information, provide a good or service that you requested, take actions reasonably anticipated within the context of our ongoing business relationship with you, or otherwise perform our contract with you.\\nDetect security incidents, protect against malicious, deceptive, fraudulent, or illegal activity, or prosecute those responsible for such activities.\\nDebug products to identify and repair errors that impair existing intended functionality.\\nExercise free speech, ensure the right of another consumer to exercise their free speech rights, or exercise another right provided for by law.\\nComply with the California Electronic Communications Privacy Act (Cal.",
+        "Penal Code § 1546 seq.).\\nEngage in public or peer-reviewed scientific, historical, or statistical research in the public interest that adheres to all other applicable ethics and privacy laws, when the information’s deletion may likely render impossible or seriously impair the research’s achievement, if you previously provided informed consent.\\nEnable solely internal uses that are reasonably aligned with consumer expectations based on your relationship with us.\\nComply with a legal obligation.\\nMake other internal and lawful uses of that information that are compatible with the context in which you provided it.",
+        "An employee of Digdev shall promptly ensure that the erasure request is complied with immediately",
+        "Once we receive and confirm your verifiable consumer request (see Exercising Access, Data Portability, and Deletion Rights), we will delete (and direct our service providers to delete) your personal information from our records, unless an exception applies.",
+        "We may deny your deletion request if retaining the information is necessary for us or our service provider(s) to:\\n\\nComplete the transaction for which we collected the personal information, provide a good or service that you requested, take actions reasonably anticipated within the context of our ongoing business relationship with you, or otherwise perform our contract with you.\\nDetect security incidents, protect against malicious, deceptive, fraudulent, or illegal activity, or prosecute those responsible for such activities.\\nDebug products to identify and repair errors that impair existing intended functionality.\\nExercise free speech, ensure the right of another consumer to exercise their free speech rights, or exercise another right provided for by law.\\nComply with the California Electronic Communications Privacy Act (Cal."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"The withdrawal of consent for data processing serves as a primary legal ground for triggering the right to data erasure.\",\n  \"Provisions describing the revocation of permission for data usage are functionally equivalent to or a subset of the right to request data deletion.\",\n  \"Legal clauses that outline the termination of a data controller's authority to process information are categorized under the broader right to delete personal data.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 19630,
+    "doc_id": 131,
+    "label_id": 5,
+    "label": "Description of Right to Delete",
+    "doc_key": "DB_131",
+    "doc_total": 3,
+    "payload": {
+      "Sentence": "We will do so immediately, unless legal requirements (for example, tax law in relation to clients) impose retention periods.",
+      "Label": "Description of Right to Delete",
+      "Document": [
+        "Right to Delete — You have the right to request the deletion of your personal data collected or maintained by us subject to certain exceptions permitted by law.",
+        "Right to Withdraw Consent – If consent was a basis of collection of your personal information and you no longer consent to us retaining and using your personal data, you may request to have it deleted.",
+        "We will do so immediately, unless legal requirements (for example, tax law in relation to clients) impose retention periods."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Sentences that specify the timeframe and legal exceptions for fulfilling a request are integral to describing the scope and application of a user's right.\",\n  \"Statements detailing the operational constraints or procedures for executing a previously defined right contribute to the description of that right.\",\n  \"Anaphoric references to an action defined in a preceding clause link a sentence to the description of that specific right.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 13206,
+    "doc_id": 79,
+    "label_id": 5,
+    "label": "Description of Right to Delete",
+    "doc_key": "DB_79",
+    "doc_total": 4,
+    "payload": {
+      "Sentence": "Deleting Your Data\\nTo you delete your data, please fill out the form at the bottom of the page",
+      "Label": "Description of Right to Delete",
+      "Document": [
+        "Deleting Your Data\\nTo you delete your data, please fill out the form at the bottom of the page.",
+        "To ensure we fully delete your data, you will need to make this request via each device and browser combination from which you accessed the Service.",
+        "If you are also concerned about other personal data associated with your account, such as your activity, please follow the instructions above to request an account deletion.",
+        "Deleting Your Data\\nTo you delete your data, please fill out the form at the bottom of the page"
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Content that explicitly outlines the procedure or steps required to initiate the removal of personal information is classified as a description of the right to deletion.\",\n  \"Text that identifies the specific mechanism, such as a form or contact method, used to exercise a user's right to erase data serves to describe that right.\",\n  \"Instructions detailing how a user can request the deletion of their data constitute a description of the right to delete.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 20446,
+    "doc_id": 138,
+    "label_id": 6,
+    "label": "Description of Right to Know PI Collected",
+    "doc_key": "DB_138",
+    "doc_total": 9,
+    "payload": {
+      "Sentence": "(iv) where possible, the envisaged period for which the personal data will be stored, or, if not possible, the criteria used to determine that period;",
+      "Label": "Description of Right to Know PI Collected",
+      "Document": [
+        "Subject to certain limitations on certain rights, you have the following rights in relation to your information, which you can exercise by contacting Digdev by sending an email to info@Digdev.com: (a) to request access to your information and information related to our use and processing of your information, including: (i) the purposes of the processing; (ii) the categories of personal data concerned;",
+        "(iv) where possible, the envisaged period for which the personal data will be stored, or, if not possible, the criteria used to determine that period;",
+        "(vi) the existence of the right to lodge a complaint with a supervisory authority; (vii) where the personal data are not collected from the data subject, any available information as to their source; (viii) the existence of automated decision-making, including profiling, referred to in Article 22(1) and (4) of the GDPR and, at least in those cases, meaningful information about the logic involved, as well as the significance and envisaged consequences of such processing for the data subject; (ix) to obtain information as to whether personal data are transferred outside the US and EU, to a third country or to an international organization.",
+        "Where this is the case, the data subject shall have the right to be informed of the appropriate safeguards relating to the transfer. (b) To request and to obtain from the controller the confirmation as to whether or not personal data concerning him/her/it is being processed.",
+        "(b) To request and to obtain from the controller the confirmation as to whether or not personal data concerning him/her/it is being processed.",
+        "the purposes of the processing; (ii) the categories of personal data concerned",
+        "to receive information which data subject have provided to us in a structured, commonly used and machine-readable format and the right to have that information transferred to another data controller (including a third party data controller); (f) to object to the processing of your information for certain purposes; and (g) to withdraw your data protection consent to our use of your information at any time where data controller rely on your consent to use or process that information.",
+        "Once we receive and confirm your verifiable consumer request (see Exercising Access, Data Portability, and Deletion Rights), we will disclose to you:\\n\\nThe categories of personal information we collected about you.\\nThe categories of sources for the personal information we collected about you.\\nOur business or commercial purpose for collecting or selling that personal information.",
+        "The specific pieces of personal information we collected about you (also called a data portability request)."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Information regarding the duration of data storage or the criteria for determining such duration is a specific detail that falls under the scope of information a data subject is entitled to know about the processing of their personal information.\",\n  \"Specifying the temporal aspects of data processing is a way to describe the specific elements of information that a data subject has the right to access.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 26694,
+    "doc_id": 181,
+    "label_id": 6,
+    "label": "Description of Right to Know PI Collected",
+    "doc_key": "DB_181",
+    "doc_total": 20,
+    "payload": {
+      "Sentence": "We do not make any decisions about individuals, and we do not tell our customers whether to reach out to a particular candidate or not.",
+      "Label": "Description of Right to Know PI Collected",
+      "Document": [
+        "We use the information submitted to update a Professional Profile solely for purposes of verifying such person’s identity, updating their Professional Profile information, and honoring such person’s privacy preferences",
+        "We may also collect data automatically through use of our Services, as described in the “Cookies and Similar Technologies” section below",
+        "ZoomInfo may aggregate collected information about our users in a form that does not allow users to be personally identified for the purpose of understanding our customer base and enhancing the Site and the Services that we and our strategic partners and customers can provide you.",
+        "We do not make any decisions about individuals, and we do not tell our customers whether to reach out to a particular candidate or not.",
+        "How we Use Information",
+        "This allows us to gauge the effectiveness of our customer communications and marketing campaigns.",
+        "The company summaries are created automatically by ZoomInfo’s software based on the information we find on those documents and from other sources such as our affiliates, partners, or service providers.",
+        "Providing information to our customers .",
+        "We receive information about our customers’ end-users from or on behalf of our customers",
+        "The resulting directory of Professional and Business Profiles (the “ Directory ”) is then made available to the users of the Site and our customers and strategic partners",
+        "hen a user installs the Software or otherwise provides ZoomInfo access to an email account, the user allows ZoomInfo to access certain Business Information stored by the application that the user’s computer uses to manage the user’s email and contacts, known as an “email client” (e.g., Microsoft Outlook) or stored by a provider of cloud services for email (e.g., Google Apps)",
+        "e use this Business Information to improve the size and quality of our Directory.",
+        "We do not collect data from custom fields or notes in the email client",
+        "I nformation submitted through our Site.",
+        "From time to time, we may use a user’s email address to send information about our products and services"
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Disclosing the absence of specific processing activities is a method of defining the scope of data usage.\",\n  \"Stating the limitations of how information is utilized is a component of describing the nature of data processing.\",\n  \"Providing information about what is not done with personal data is a way to provide transparency regarding the extent of data processing.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 34167,
+    "doc_id": 227,
+    "label_id": 6,
+    "label": "Description of Right to Know PI Collected",
+    "doc_key": "DB_227",
+    "doc_total": 4,
+    "payload": {
+      "Sentence": "The business or commercial purpose for collecting or selling personal information; and \\n\\nThe specific pieces of personal information that D&B has about you",
+      "Label": "Description of Right to Know PI Collected",
+      "Document": [
+        "MDR Products and Services\\nTo help ensure data quality and accuracy, MDR Products and Services provides businesses, organizations, and professionals with access to their business information within MDR Products and Services’ databases and with an opportunity to correct verified inaccuracies.",
+        "The “Right to Know” or the “Right to Information About Collection, Disclosure and Sale of your Personal Information” gives you the right to request the following information: \\n\\nCategories of personal information D&B has collected about you; \\n\\nCategories of sources from which the personal information was collected; \\n\\nCategories of your personal information that D&B sold or disclosed for a business purpose; \\n\\nCategories of third parties to whom the personal information was sold or disclosed for a business purpose; \\n\\nThe business or commercial purpose for collecting or selling personal information; and \\n\\nThe specific pieces of personal information that D&B has about you",
+        "The “Right to Know” or the “Right to Information About Collection, Disclosure and Sale of your Personal Information” gives you the right to request the following information: \\n\\nCategories of personal information D&B has collected about you; \\n\\nCategories of sources from which the personal information was collected;",
+        "The business or commercial purpose for collecting or selling personal information; and \\n\\nThe specific pieces of personal information that D&B has about you"
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Content that specifies the purposes of data processing or the specific data points held by an entity constitutes a description of the information accessible under a right to know.\",\n  \"A list of items following a preamble defining a specific right serves to delineate the specific details or categories covered by that right.\",\n  \"Identifying the specific pieces of information or the reasons for their collection is a characteristic feature of describing the scope of a right to information.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 6636,
+    "doc_id": 39,
+    "label_id": 6,
+    "label": "Description of Right to Know PI Collected",
+    "doc_key": "DB_39",
+    "doc_total": 7,
+    "payload": {
+      "Sentence": "You have the right to obtain the above information, in a portable and (if technically feasible) readily usable format.",
+      "Label": "Description of Right to Know PI Collected",
+      "Document": [
+        "Right to Know\\nYou have the right to request, at no charge, that we disclose to you the categories and specific pieces of Personal Information Lotame has collected about you in the prior 12 months, including:\\n\\ncategories of Personal Information collected about you;\\ncategories of sources from which we collected your Personal Information;\\nbusiness and/or commercial purposes for collecting and disclosing your Personal Information;",
+        "Right to Know\\n\\nYou have the right to request, at no charge, that we disclose to you the categories and specific pieces of Personal Information Lotame has collected about you in the prior 12 months, including:\\n\\ncategories of Personal Information collected about you;\\ncategories of sources from which we collected your Personal Information;\\nbusiness and/or commercial purposes for collecting and disclosing your Personal Information;",
+        "Access to the personal information we process about you;",
+        "categories of Personal Information collected about you;",
+        "categories of sources from which we collected your Personal Information;\\nbusiness and/or commercial purposes for collecting and disclosing your Personal Information;",
+        "the specific pieces of Personal Information collected about you.",
+        "You have the right to obtain the above information, in a portable and (if technically feasible) readily usable format."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Sentences that specify the format or manner of information retrieval provide a description of the procedural components of a right to access data.\",\n  \"Referential language linking a right to previously mentioned content serves to define the scope of that right.\",\n  \"Detailing the accessibility or portability of information is a method of describing the implementation of a right to know personal data.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 42259,
+    "doc_id": 286,
+    "label_id": 7,
+    "label": "Description of Right to Know PI sold / shared",
+    "doc_key": "WS_56",
+    "doc_total": 4,
+    "payload": {
+      "Sentence": "Note that the CCPA defines “business purpose” broadly; and because we use service providers for a number of business purposes that require access to our systems that hold personal information (such as supplying cloud data storage, maintaining the security of our systems, and providing customer support), in the past 12 months we have disclosed for a business purpose data from each of the categories of personal information we maintain.\\nThe categories of personal information we have sold about you (if any), for each category of third parties to which the personal information was sold.",
+      "Label": "Description of Right to Know PI sold / shared",
+      "Document": [
+        "The categories of personal information we have disclosed about you for a business purpose.",
+        "Note that the CCPA defines “business purpose” broadly; and because we use service providers for a number of business purposes that require access to our systems that hold personal information (such as supplying cloud data storage, maintaining the security of our systems, and providing customer support), in the past 12 months we have disclosed for a business purpose data from each of the categories of personal information we maintain.\\nThe categories of personal information we have sold about you (if any), for each category of third parties to which the personal information was sold.",
+        "We provide our “Do Not Sell My Info” disclosures in the Cookies and Similar Technologies section of this Notice.",
+        "You have a right to request that companies provide you with the following information:\\n\\nThe categories and specific pieces of personal information we have collected about you.\\nThe categories of sources from which we collect personal information.\\nThe purposes for collecting, using, or selling personal information.\\nThe categories of third parties with which we share personal information.\\nThe categories of personal information we have disclosed about you for a business purpose"
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Text that explicitly identifies the categories of personal information sold and the recipients of such sales constitutes a description of the right to know about sold or shared data.\",\n  \"Information detailing the disclosure of personal information to third parties for specific purposes is inherently related to the disclosure of information regarding the sale or sharing of data.\",\n  \"A description of the types of personal information transferred to service providers or third parties serves to inform users about the scope of data sharing and selling activities.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 22330,
+    "doc_id": 148,
+    "label_id": 7,
+    "label": "Description of Right to Know PI sold / shared",
+    "doc_key": "DB_148",
+    "doc_total": 2,
+    "payload": {
+      "Sentence": "the categories of third parties with whom we share or to whom we have shared or sold your personal information in the prior 12 months\\nthe categories of personal information that have been provided to such third parties in the prior 12 months.",
+      "Label": "Description of Right to Know PI sold / shared",
+      "Document": [
+        "the categories of third parties with whom we share or to whom we have shared or sold your personal information in the prior 12 months\\nthe categories of personal information that have been provided to such third parties in the prior 12 months.",
+        "California Civil Code Section 1798.83 (“Shine the Light“) permits California customers to request certain information regarding our disclosure of personal information to third parties for their direct marketing purposes"
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"A sentence that details the categories of personal information and the types of third parties involved in data sharing or selling serves to describe the scope of the right to know about such disclosures.\",\n  \"Identifying the specific types of data provided to third parties within a defined period is a key element of disclosing the details of personal information sharing or selling.\",\n  \"The identification of both the recipients and the specific types of data subject to sharing or selling is a fundamental component of describing the right to know about personal information disclosures.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 27224,
+    "doc_id": 183,
+    "label_id": 7,
+    "label": "Description of Right to Know PI sold / shared",
+    "doc_key": "DB_183",
+    "doc_total": 2,
+    "payload": {
+      "Sentence": "the business or commercial purposes for collecting or selling the personal information; and (4) the categories of third parties with which the personal information is shared",
+      "Label": "Description of Right to Know PI sold / shared",
+      "Document": [
+        "New Right to Know Where Data is Collected from and to Whom It is Sold\\nUpon receipt of a verifiable consumer request, a covered business must disclose the following: (1) the categories of personal information collected about the consumer; (2) the categories of sources from which personal information is collected; (3) the business or commercial purposes for collecting or selling the personal information; and (4) the categories of third parties with which the personal information is shared; and (5) the specific pieces of personal information collected about that consumer.\\n\\n",
+        "the business or commercial purposes for collecting or selling the personal information; and (4) the categories of third parties with which the personal information is shared"
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Content that specifies the purposes of data collection or sale and the identities of third-party recipients directly describes the components of a right to know about information sharing.\",\n  \"A list of required disclosures regarding the commercial use and distribution of personal information functions as a description of the right to know about such activities.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 28583,
+    "doc_id": 190,
+    "label_id": 7,
+    "label": "Description of Right to Know PI sold / shared",
+    "doc_key": "DB_190",
+    "doc_total": 25,
+    "payload": {
+      "Sentence": "In such cases, Outbrain does not pass these third parties the data which Outbrain collects on its Users but allows such third parties to directly collect data (including personal data) via the widget for fraud and/or security purposes or in order to provide measurement information to advertisers (such as the number of conversions and/or impressions).",
+      "Label": "Description of Right to Know PI sold / shared",
+      "Document": [
+        "Using Third Party Services on Our Sites",
+        "Our Sites contain links to other websites that we do not own or operate.",
+        "We do not control, recommend or endorse the content, products, services, privacy policies or practices of these third party websites.",
+        "For example, on Our Sites you will notice clickable icons which take you to the Outbrain Facebook page or the Outbrain LinkedIn page.",
+        "If you choose to click on these links, you should know that these sites are not owned or operated by Outbrain and therefore these third party websites may send their own cookies to your device and they may independently collect personal data.",
+        "It is therefore important that you get familiar with the privacy policies of these third party websites.",
+        "We require advertisers to disclose the usage of the Outbrain pixel on their own websites.Outbrain may also allow certain trusted third party partners to collect data via cookies delivered through the Outbrain widget.",
+        "In such cases, Outbrain does not pass these third parties the data which Outbrain collects on its Users but allows such third parties to directly collect data (including personal data) via the widget for fraud and/or security purposes or in order to provide measurement information to advertisers (such as the number of conversions and/or impressions).",
+        "Any such collection shall be governed by such third parties privacy policy.",
+        "(c) How we may share information with anyone",
+        "Business Partners have access to certain password-protected features of the Amplify or Engage service.",
+        "Business Partners are responsible for keeping this password confidential and for ensuring the same for their employees and/or their agents.",
+        "Please remember that, unfortunately, the transmission of information via the internet is never completely secure.",
+        "A common Internet scam is known as “spoofing” or “phishing.” This occurs when you receive an email from what appears to be a legitimate source requesting personal data from you.",
+        "Please be aware that we will not send you any emails requesting you to verify credit card, bank information, or any other personal data."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"A sentence qualifies as a description of the right to know about PI sharing when it specifies the methods or channels through which third parties obtain personal information.\",\n  \"Disclosing the direct collection of personal data by external entities, even in the absence of a direct transfer from the primary controller, constitutes a disclosure of data sharing practices.\",\n  \"Identifying the specific purposes for which third-party access to personal data is permitted provides necessary transparency regarding the scope of information sharing.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 23609,
+    "doc_id": 155,
+    "label_id": 8,
+    "label": "Description of Right to Limit use of PI",
+    "doc_key": "DB_155",
+    "doc_total": 1,
+    "payload": {
+      "Sentence": "You may also choose to enable Limit Ad Tracking from the Privacy menu within Smart TV Settings on your Smart TV.",
+      "Label": "Description of Right to Limit use of PI",
+      "Document": [
+        "You may also choose to enable Limit Ad Tracking from the Privacy menu within Smart TV Settings on your Smart TV."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"A sentence describes a right to limit the use of personal information if it identifies a specific mechanism or setting intended to restrict data tracking or collection.\",\n  \"Providing actionable instructions on how to access privacy-related controls constitutes a description of the user's ability to manage their personal information.\",\n  \"The mention of features specifically designed to opt-out of or limit advertising-related tracking serves as an explanation of the right to control personal data usage.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 22322,
+    "doc_id": 148,
+    "label_id": 8,
+    "label": "Description of Right to Limit use of PI",
+    "doc_key": "DB_148",
+    "doc_total": 24,
+    "payload": {
+      "Sentence": "Withdrawal: the withdrawal of your consent to any processing of your personal data carried out on the basis of consent,",
+      "Label": "Description of Right to Limit use of PI",
+      "Document": [
+        "Opt this browser out of targeted advertising (if using a browser)",
+        "Your current opt-out status with MediaMath in this web browser is:",
+        "Opt out of targeted advertising in the mobile application environment",
+        "You may opt out in mobile app environments using the “AppChoices” mobile application, where applicable, which you can download to your mobile device from your App Store or via the DAA AppChoices page here.",
+        "Other ways to opt out of targeted advertising",
+        "You may learn more about targeted advertising and opt out of targeted advertising from MediaMath and other online advertising companies that are also members of applicable self-regulatory organizations by visiting their opt-out links:",
+        "NAI (browser) – http://optout.networkadvertising.org/",
+        "DAA (browser) – http://optout.aboutads.info/",
+        "DAA Canada (browser) – http://youradchoices.ca/choices",
+        "EDAA (browser) – http://www.youronlinechoices.com/",
+        "DAA AppChoices page (mobile) – http://www.aboutads.info/appchoices",
+        "Other ways to limit ad tracking in the mobile and OTT TV device application environment",
+        "You also may limit ad tracking in mobile app environments on your mobile device as well as on your OTT TV Device.",
+        "Withdrawal: the withdrawal of your consent to any processing of your personal data carried out on the basis of consent,",
+        "Restrict: restrict certain processing of your personal data"
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Defining the revocation of consent for data processing constitutes a description of a right to limit the use of personal information.\",\n  \"A definition explaining the removal of permission for data processing activities serves to describe the mechanism for restricting personal data usage.\",\n  \"Describing the process of withdrawing consent provides an explanation of how a user can limit the processing of their personal data.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 22126,
+    "doc_id": 148,
+    "label_id": 8,
+    "label": "Description of Right to Limit use of PI",
+    "doc_key": "DB_148",
+    "doc_total": 24,
+    "payload": {
+      "Sentence": "If you clear your cookies, or if you use a different browser or device, you will need to renew your opt-out choice.",
+      "Label": "Description of Right to Limit use of PI",
+      "Document": [
+        "Opt out of targeted advertising",
+        "With targeted advertising, you receive ads and offers that are more likely to be useful to you.",
+        "When you opt out, MediaMath also stops sending targeted advertising to the opted-out browser, app, or device.",
+        "Opt out of targeted advertising in a browser",
+        "You may opt out if you are using a browser by clicking the “Click here to opt out” link below.",
+        "Please note that if cookies are not enabled in your browser, including if third-party cookies are disabled, or if you use certain ad-blocking tools, our opt-out mechanism may not work properly.",
+        "Please also note that deleting your cookies does not opt you out.",
+        "If you clear your cookies, or if you use a different browser or device, you will need to renew your opt-out choice.",
+        "Opt this browser out of targeted advertising (if using a browser)",
+        "Your current opt-out status with MediaMath in this web browser is:",
+        "Opt out of targeted advertising in the mobile application environment",
+        "You may opt out in mobile app environments using the “AppChoices” mobile application, where applicable, which you can download to your mobile device from your App Store or via the DAA AppChoices page here.",
+        "Other ways to opt out of targeted advertising",
+        "You may learn more about targeted advertising and opt out of targeted advertising from MediaMath and other online advertising companies that are also members of applicable self-regulatory organizations by visiting their opt-out links:",
+        "NAI (browser) – http://optout.networkadvertising.org/"
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"A sentence that specifies the conditions under which a user's preference to restrict data usage must be re-applied describes the procedural limitations of a right to limit personal information.\",\n  \"Information detailing how changes in technical environments affect the persistence of a privacy choice serves to explain the scope and boundaries of a right to limit data processing.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 43323,
+    "doc_id": 296,
+    "label_id": 8,
+    "label": "Description of Right to Limit use of PI",
+    "doc_key": "WS_66",
+    "doc_total": 2,
+    "payload": {
+      "Sentence": "Right to Limit Use and Disclosure of Sensitive Personal Information\\n\\nYou have the right, at any time, to direct us to limit our use of your sensitive personal information to that use which is necessary to perform the services or provide the goods reasonably expected by an average consumer who requests those goods or services.",
+      "Label": "Description of Right to Limit use of PI",
+      "Document": [
+        "Right to Limit Use and Disclosure of Sensitive Personal Information\\n\\nYou have the right, at any time, to direct us to limit our use of your sensitive personal information to that use which is necessary to perform the services or provide the goods reasonably expected by an average consumer who requests those goods or services.",
+        "This does not include sensitive personal information that is collected or processed without the purpose of inferring characteristics about you."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"A sentence that explicitly names a specific right and then details the scope of its application serves as a description of that right.\",\n  \"Content that outlines the specific constraints or limitations placed on the processing of personal information constitutes a description of a right to limit such use.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 8342,
+    "doc_id": 51,
+    "label_id": 9,
+    "label": "Description of Right to Non-discrimination on exercising rights",
+    "doc_key": "DB_51",
+    "doc_total": 3,
+    "payload": {
+      "Sentence": "Right to be free from discrimination\\n\\nYou may not be discriminated against for exercising your rights under California’s or Virginia’s privacy laws, as applicable to you.",
+      "Label": "Description of Right to Non-discrimination on exercising rights",
+      "Document": [
+        "Right to be free from discrimination\\n\\nYou may not be discriminated against for exercising your rights under California’s or Virginia’s privacy laws, as applicable to you.",
+        "Right to be free from discrimination",
+        "You may not be discriminated against for exercising your rights under California’s or Virginia’s privacy laws, as applicable to you."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"A sentence that explicitly names a right and then details the prohibition of discriminatory treatment when exercising that right serves as a description of the right to non-discrimination.\",\n  \"Content that specifies that individuals cannot be penalized or treated differently for exercising legal protections inherently describes the right to non-discrimination.\",\n  \"The presence of a heading stating a right followed by a clause prohibiting discrimination against the exercise of that right identifies the content as a description of the right to non-discrimination.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 41107,
+    "doc_id": 274,
+    "label_id": 9,
+    "label": "Description of Right to Non-discrimination on exercising rights",
+    "doc_key": "WS_44",
+    "doc_total": 5,
+    "payload": {
+      "Sentence": "To opt out in mobile apps, you may use your device’s setting to opt out of ads personalization or similar settings or download and use the AppChoices app at https://youradchoices.com/appchoices.",
+      "Label": "Description of Right to Non-discrimination on exercising rights",
+      "Document": [
+        "Right to be Free from Discrimination.",
+        "You have the right to be free from unlawful discrimination for exercising your rights under the CCPA.",
+        "To opt out in mobile apps, you may use your device’s setting to opt out of ads personalization or similar settings or download and use the AppChoices app at https://youradchoices.com/appchoices.",
+        "To opt out on connected TVs, please use the device setting \"opt out of ads personalization,\" \"Interest-based Ads,\" or equivalent settings on your device",
+        "(5) Right to be Free from Discrimination."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Instructions detailing the methods for exercising a consumer right are categorized as part of the description of that right.\",\n  \"Content outlining the practical implementation of an opt-out process is considered a description of the exercise of a right.\",\n  \"When procedural steps for exercising rights are presented within a section about non-discrimination, they function as a description of the rights' exercise.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 22929,
+    "doc_id": 152,
+    "label_id": 9,
+    "label": "Description of Right to Non-discrimination on exercising rights",
+    "doc_key": "DB_152",
+    "doc_total": 9,
+    "payload": {
+      "Sentence": "Charge you different prices or rates for goods or services, including through granting discounts or other benefits, or imposing penalties.",
+      "Label": "Description of Right to Non-discrimination on exercising rights",
+      "Document": [
+        "Right to Non-Discrimination for Exercising Your Privacy Rights",
+        "We will not discriminate against you for exercising any of your Applicable Data Privacy Laws rights.",
+        "Unless permitted by the Applicable Data Privacy Laws, we will not:",
+        "Deny you goods or services.",
+        "Charge you different prices or rates for goods or services, including through granting discounts or other benefits, or imposing penalties.",
+        "Provide you a different level or quality of goods or services.",
+        "Suggest that you may receive a different price or rate for goods or services or a different level or quality of goods or services.",
+        "Right to Non-Discrimination for Exercising Your Privacy Rights\\n\\nWe will not discriminate against you for exercising any of your Applicable Data Privacy Laws rights.",
+        "Unless permitted by the Applicable Data Privacy Laws, we will not:\\n\\nDeny you goods or services.\\nCharge you different prices or rates for goods or services, including through granting discounts or other benefits, or imposing penalties.\\nProvide you a different level or quality of goods or services.\\nSuggest that you may receive a different price or rate for goods or services or a different level or quality of goods or services."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"A list of specific prohibited actions following a general non-discrimination declaration serves to describe the practical application of that right.\",\n  \"Detailing specific methods of differential treatment, such as varying prices or benefits, provides the descriptive content for what constitutes discriminatory behavior.\",\n  \"Identifying specific mechanisms of disparate treatment, such as penalties or discounts, functions as a descriptive elaboration of a non-discrimination policy.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 16178,
+    "doc_id": 104,
+    "label_id": 9,
+    "label": "Description of Right to Non-discrimination on exercising rights",
+    "doc_key": "DB_104",
+    "doc_total": 1,
+    "payload": {
+      "Sentence": "The right to exercise the above rights without facing retaliatory discrimination.",
+      "Label": "Description of Right to Non-discrimination on exercising rights",
+      "Document": [
+        "The right to exercise the above rights without facing retaliatory discrimination."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"A sentence that explicitly mentions the prohibition of retaliation or discrimination during the exercise of rights describes a right to non-discrimination.\",\n  \"The presence of language specifying that rights can be exercised without facing negative repercussions characterizes a description of non-discrimination protections.\",\n  \"Text that defines the conditions under which rights are protected from discriminatory practices serves as a description of the right to non-discrimination.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 53343,
+    "doc_id": 360,
+    "label_id": 10,
+    "label": "Description of Right to Opt-out of sale of PI",
+    "doc_key": "WS_130",
+    "doc_total": 3,
+    "payload": {
+      "Sentence": "You can learn about your rights relating to prescreened offers including how to opt out by calling 1-888-567-8688 or by going to https://www.optoutprescreen.com/",
+      "Label": "Description of Right to Opt-out of sale of PI",
+      "Document": [
+        "You can learn about your rights relating to prescreened offers including how to opt out by calling 1-888-567-8688 or by going to https://www.optoutprescreen.com/",
+        "Opting Out of the Sale and Sharing of CA Personal Information.",
+        "You may stop our disclosure of your CA Personal Information to these entities for their use for secondary purposes by opting-out of the sale or sharing of your CA Personal Information."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"A sentence that provides specific contact methods or URLs for exercising a choice describes an opt-out process.\",\n  \"Explicitly mentioning the ability to 'opt out' of certain offers or data practices characterizes a description of an opt-out right.\",\n  \"Providing actionable instructions for managing personal information preferences constitutes a description of rights related to the sale or sharing of personal information.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 7093,
+    "doc_id": 43,
+    "label_id": 10,
+    "label": "Description of Right to Opt-out of sale of PI",
+    "doc_key": "DB_43",
+    "doc_total": 14,
+    "payload": {
+      "Sentence": "Disabling Cookies\\n\\nMost web browsers are set up to accept cookies.",
+      "Label": "Description of Right to Opt-out of sale of PI",
+      "Document": [
+        "You have the option to opt-out of third-party sharing or selling of your personal information.",
+        "Right to “opt-out” of the sale of your personal information\\nWe will not deny, charge different prices for, or provide a different level of quality of goods or services if you choose to exercise these rights.\\n\\nCalifornia residents may opt out of the “sale” of their personal information.",
+        "California law broadly defines what constitutes a “sale” – including in the definition making available a wide variety of information in exchange for “valuable consideration.”\\n\\nDepending what information we have about you, and whether we have included any of it in our marketing products and services, we may have sold (as defined by California law) certain categories of information about you in the last 12 months, as described in the above table in Section II of this Addendum, titled OUR DISCLOSURE AND SALE OF PERSONAL INFORMATION.\\n\\nIf you would like to opt out, you may do so as outlined on the following page: Do Not Sell My Personal Information.",
+        "Your Marketing and Opt-Out Choices",
+        "There are multiple ways that you can opt-out of having the Information used to market to you:",
+        "You have the option to opt-out of third-party sharing or selling of your personal information",
+        "Where you have requested that we delete personal information that we have collected from you, we will seek to confirm whether your request is for an “opt out” or a “deletion”: because “opt out” or “do not sell” rights enable us to maintain your information for “suppression” purposes – i.e., to prevent us from selling information about you in the future (which is what many consumers requesting “deletion” actually desire to occur), we try to explain this in order to ensure we are meeting consumers’ preferences.",
+        "California residents may opt out of the “sale” of their personal information",
+        "Disabling Cookies\\n\\nMost web browsers are set up to accept cookies.",
+        "We will then in most cases remove your personal information from our active marketing databases within ten (10) business days, from the time we received the opt-out request.",
+        "Right to “opt-out” of the sale of your personal information",
+        "California residents may opt out of the “sale” of their personal information.",
+        "California law broadly defines what constitutes a “sale” – including in the definition making available a wide variety of information in exchange for “valuable consideration.”",
+        "Your Marketing and Opt-Out Choices\\nThere are multiple ways that you can opt-out of having the Information used to market to you:"
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Technical methods for managing tracking technologies can be categorized as part of the functional implementation of privacy rights.\",\n  \"Content describing the control of data collection mechanisms is often contextually associated with the right to opt-out of the sale of personal information.\",\n  \"Information about browser-level privacy settings is frequently grouped with legal disclosures regarding the management of personal data.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 50270,
+    "doc_id": 345,
+    "label_id": 10,
+    "label": "Description of Right to Opt-out of sale of PI",
+    "doc_key": "WS_115",
+    "doc_total": 15,
+    "payload": {
+      "Sentence": "Clicking on that button, and following the instructions, will also allow you to opt out of the sharing of your information with our sponsorship vendors for delivery of \"interest-based\" sponsorship credits and marketing messages on NPR.org.",
+      "Label": "Description of Right to Opt-out of sale of PI",
+      "Document": [
+        "Clicking on that button, and following the instructions, will also allow you to opt out of the sharing of your information with our sponsorship vendors for delivery of \"interest-based\" sponsorship credits and marketing messages on NPR.org.",
+        "If you opt out, those vendors may continue to serve you non-personalized, non-interest-based sponsorship credits and marketing messages on NPR.org.",
+        "Note that this opt out is a cookie-based process and will only affect the specific computer, device, and browser on which your opt-out choice is applied.",
+        "If you subsequently delete your browser cookies or if your browser cookies expire, you will need to opt out again.",
+        "Blocking advertising ID use in your mobile settings.",
+        "Your mobile device settings can provide functionality to limit use of the advertising ID associated with your mobile device for interest-based sponsorship purposes.",
+        "As noted above, if you opt out, you may still receive the same number of sponsorship credits and marketing messages as before but they may not be as relevant to your interests.",
+        "Because these opt out mechanisms are specific to the device on which they are exercised, you will need to opt out on every device that you use",
+        "Opt out of the sharing of your personal information.",
+        "We share personal information with sponsorship and marketing vendors that display or serve targeted sponsorship and marketing messages to users around the web and other online services.",
+        "You may opt out of the sharing of your information with our sponsorship vendors for delivery of personalized sponsorship credits and marketing messages on our website or third-party sites by turning off \"Share Data for Targeted Sponsorship\" below.",
+        "If you opt out, our service providers or vendors may continue to serve you non-personalized, non-\"interest-based\" sponsorship credits and marketing messages on our website or third-party sites, and those sponsorship credits and marketing message may come with cookies that are used to control how often you encounter those credits and messages, to prevent fraud, and to do aggregate reporting.",
+        "Share Data for Targeted Sponsorship\\nYou may opt out of the sharing of your information with our sponsorship vendors for delivery of personalized sponsorship credits and marketing messages on our website or third-party sites by turning off \"Share Data for Targeted Sponsorship.\" If you opt out, our service providers or vendors may continue to serve you non-personalized, non-\"interest-based\" sponsorship credits and marketing messages on our website or third-party sites, and those sponsorship credits and marketing message may come with cookies that are used to control how often you encounter those credits and messages, to prevent fraud, and to do aggregate reporting.",
+        "Opt out of sharing precise location information.",
+        "If you consent to our collection of your precise device location through an NPR mobile application, you can withdraw your consent at any time and prevent the further collection of your precise location by accessing the privacy settings of your mobile device and/or the settings of the NPR mobile application."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Sentences that explicitly mention the ability to 'opt out' of data sharing or processing directly describe the exercise of an opt-out right.\",\n  \"Providing specific instructions or mechanisms, such as clicking a button, to prevent the sharing of information constitutes a description of the process for exercising an opt-out right.\",\n  \"Identifying the specific purposes or third parties involved in the sharing of information provides the necessary context to define the scope of an opt-out right.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 21170,
+    "doc_id": 142,
+    "label_id": 10,
+    "label": "Description of Right to Opt-out of sale of PI",
+    "doc_key": "DB_142",
+    "doc_total": 2,
+    "payload": {
+      "Sentence": "Right to Opt-out of the sale of your personal information.\\n\\nResidents of California and Other Applicable States may opt out of the “sale” of their personal information.",
+      "Label": "Description of Right to Opt-out of sale of PI",
+      "Document": [
+        "Right to Opt-out of the sale of your personal information.\\n\\nResidents of California and Other Applicable States may opt out of the “sale” of their personal information.",
+        "Where you have requested that we delete personal information that we have collected from you, we will seek to confirm whether your request is for an “opt out” or a “deletion”: because “opt out” or “do not sell” rights enable us to maintain your information for “suppression” purposes – i.e., to prevent us from selling information about you in the future (which is what many consumers requesting “deletion” actually desire to occur), we try to explain this in order to ensure we are meeting consumers’ preferences."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"A sentence that explicitly names a specific right and details the scope or mechanism of that right serves as a description of that right.\",\n  \"Content that identifies a specific group of individuals and their ability to perform a specific action regarding personal information constitutes a description of a right to opt-out.\",\n  \"Text that explicitly mentions the 'sale' of personal information in conjunction with an 'opt-out' mechanism provides a description of the right to opt-out of such sales.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 51465,
+    "doc_id": 347,
+    "label_id": 11,
+    "label": "Methods to exercise rights",
+    "doc_key": "WS_117",
+    "doc_total": 22,
+    "payload": {
+      "Sentence": "When submitting a request online, your authorized agent should select the \"Other\" option on the form and, in the field provided, include your name, your email address, and whether or not you have an account/profile with us.",
+      "Label": "Methods to exercise rights",
+      "Document": [
+        "Please also provide your full name and, if you like, you may also provide the specific Fox News Service to which your request pertain",
+        "To make a request for your Personal Information, please go to https://fcprivacy.exterro.net/portal/dsar.htm?target=Fox_News_Network or call us at 888-596-3929.",
+        "To make a request for deletion, please go to https://fcprivacy.exterro.net/portal/dsar.htm?target=Fox_News_Network or call us at 888-596-3929.",
+        "To make a request for correction of inaccurate Personal Information, please go to https://fcprivacy.exterro.net/portal/dsar.htm?target=Fox_News_Network or call us at 888-596-3929",
+        "For mobile and connected TV apps, you may visit \"Your Privacy Choices\" in Account/Settings for more information and to exercise your choices.",
+        "In your request, please include your email address, name, address, and telephone number and specify clearly what information you would like to suppress or limit.",
+        "7) Contact Us\\nIf you have questions about this Privacy Policy, please contact us at:\\n\\nEmail: fnldepartment@fox.com\\nMail: Legal & Business Affairs, Fox News\\n1211 Avenue of the Americas\\nNew York, NY 10036",
+        "You can use an authorized agent to submit a request for your Personal Information.",
+        "When submitting a request online, your authorized agent should select the \"Other\" option on the form and, in the field provided, include your name, your email address, and whether or not you have an account/profile with us.",
+        "You can use an authorized agent to submit a request for deletion.",
+        "To make a request for correction of inaccurate Personal Information, please go to https://fcprivacy.exterro.net/portal/dsar.htm?target=Fox_News_Network or call us at 888-596-3929.",
+        "You will need to provide your name, email address, and the Personal Information you would like to have corrected, along with other details about your request.",
+        "You will need to provide your name and email address, along with other details about your request.",
+        "You can use an authorized agent to submit a request for correction of inaccurate Personal Information.",
+        "If you do not have an account, or choose not to log-in to your account on a device, you will need to select your preference on each device."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Instructions that detail specific steps or required information for a submission process describe the methods used to exercise rights.\",\n  \"Describing the procedural actions an authorized party must take to complete a request constitutes a method for exercising rights.\",\n  \"Outlining the specific fields or options to be used within a request form serves to define the mechanism for exercising rights.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 31527,
+    "doc_id": 207,
+    "label_id": 11,
+    "label": "Methods to exercise rights",
+    "doc_key": "DB_207",
+    "doc_total": 20,
+    "payload": {
+      "Sentence": "You can find additional information and more detailed instructions here.",
+      "Label": "Methods to exercise rights",
+      "Document": [
+        "You can opt out by clicking here or by following the instructions in this section.",
+        "Please note that in order for your opt-out choice to be effective using the DAA’s tools, you must ensure that your browser is set to accept third-party cookies such as the OpenX opt-out cookie.",
+        "Some browsers block third-p",
+        "You can do this by using the “location services” controls in your mobile device’s settings.",
+        "You can find additional information and more detailed instructions here.",
+        "To exercise any of the above rights, please reach us here or using the contact information provided below in this section and we will respond to you.",
+        "To opt out on a browser (e.g., as you engage on websites): \\nCookies.",
+        "If you live in the EEA, you can learn more about and opt out of this kind of data collection by companies, including OpenX, that adhere to the European DAA Principles at www.youronlinechoices.com.",
+        "As an opt out alternative, you can also download a browser or extension that supports the Global Privacy Control by visiting this website.\\nPlease note that in order for your opt-out choice to be effective using the DAA’s tools, you must ensure that your browser is set to accept third-party cookies such as the OpenX opt-out cookie.",
+        "Some browsers block third-party cookies by default, and you may need to change your browser settings to accept third-party cookies before opting out.",
+        "Additionally, if you later use a different device or browser, or erase cookies from your browser, you may need to renew your opt-out choice.\\nNon-Cookie Identifiers.",
+        "Companies may use the local storage or cache in your browser to collect information about you as you browse the Internet.",
+        "As an opt out alternative, you can also download a browser or extension that supports the Global Privacy Control by visiting this website.\\nTo opt out on a cell phone or mobile device (as you use mobile apps): You can opt out of the collection of data for interest-based advertising on your mobile device, for OpenX and other companies participating in industry self-regulation, by downloading the DAA’s AppChoices application from the Android or iOS app store.",
+        "Alternatively, or if you live outside of the United States (in which case you may not have access to this application), you can turn off the “Allow Apps to Request to Track” setting in your iOS settings or turn on the “opt out of interest-based ads” setting in your Android settings to limit the collection of your data for interest-based advertising.",
+        "You can find additional information and more detailed instructions here.\\nTo opt out of the collection of precise location data (as you use your mobile device): You may wish to opt out of the collection of your precise location data, to the extent Publisher’s collect and share such data with OpenX and other advertising partners."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Sentences that provide directions or pointers to further instructions are categorized as part of the procedural methods for performing an action.\",\n  \"Directing users to additional resources or detailed guidance is a way to facilitate the execution of specific rights or choices.\",\n  \"Content that points to the location of necessary information for a process is considered a component of the methods used to implement that process.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 56682,
+    "doc_id": 397,
+    "label_id": 11,
+    "label": "Methods to exercise rights",
+    "doc_key": "WS_167",
+    "doc_total": 6,
+    "payload": {
+      "Sentence": "To request the correction of inaccurate information please click here to manage your policy or call us at 800-841-3000.",
+      "Label": "Methods to exercise rights",
+      "Document": [
+        "To do so, simply contact GEICO's customer service department.",
+        "If you'd like to correct information that you provided to us, our representative will make the appropriate adjustments to GEICO's records.",
+        "If you wish to correct personal information provided to GEICO by a third party (such as a credit rating agency) the representative will provide you with the applicable third party's contact information.",
+        "To exercise your rights to know or delete under the CCPA, please click here or call us toll-free at 877-832-0937.",
+        "To request the correction of inaccurate information please click here to manage your policy or call us at 800-841-3000.",
+        "If you are exercising your rights as a California resident who is also a GEICO current employee, former or retired employee, job applicant, or independent contractor, please click here or call us at 301-986-4656."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Sentences that specify actionable contact channels, such as telephone numbers or hyperlinks, for performing a particular task are categorized as methods to exercise rights.\",\n  \"Providing instructions on the procedural means to initiate a request for data modification or correction constitutes describing the methods to exercise rights.\",\n  \"Any text that outlines the available tools or communication methods for a user to fulfill a legal or administrative prerogative falls under the category of methods to exercise rights.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 17273,
+    "doc_id": 110,
+    "label_id": 11,
+    "label": "Methods to exercise rights",
+    "doc_key": "DB_110",
+    "doc_total": 5,
+    "payload": {
+      "Sentence": "If you wish to opt out of other third party ad platforms and ad networks (including ones we work with and may have transferred data to in the past), we recommend visiting the opt-out pages offered by the Network Advertising Initiative and the DAA’s AboutAds program.",
+      "Label": "Methods to exercise rights",
+      "Document": [
+        "If you are a California resident and would like to exercise any of these rights under the CCPA, please click here to send an email to us or please click “Do Not Sell My Data” at the bottom of this page.",
+        "You may click here to send an email to us, to opt out of Data Axle’s database",
+        "If you wish to opt out of other third party ad platforms and ad networks (including ones we work with and may have transferred data to in the past), we recommend visiting the opt-out pages offered by the Network Advertising Initiative and the DAA’s AboutAds program",
+        "If you are a California resident and would like to exercise any of these rights under the CCPA, please click here to send an email to us or please click “Do Not Sell My Data” at the bottom of this page",
+        "If you wish to opt out of other third party ad platforms and ad networks (including ones we work with and may have transferred data to in the past), we recommend visiting the opt-out pages offered by the Network Advertising Initiative and the DAA’s AboutAds program."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Sentences that provide specific instructions or recommend external resources for achieving a privacy-related outcome are classified as methods to exercise rights.\",\n  \"Any text that outlines actionable steps or tools to opt out of data sharing or tracking constitutes a method for exercising rights.\",\n  \"Identifying specific third-party programs or organizations as a means to manage data preferences falls under the category of methods to exercise rights.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 42155,
+    "doc_id": 285,
+    "label_id": 13,
+    "label": "Updated Privacy Policy",
+    "doc_key": "WS_55",
+    "doc_total": 11,
+    "payload": {
+      "Sentence": "Your use of the Website or the Service, or your provision of personal information following any changes means that you accept the updated Privacy Policy.\\n\\n \\n\\nLast modified: June 28, 2022",
+      "Label": "Updated Privacy Policy",
+      "Document": [
+        "Updates or Amendments to the Privacy Notice\\nWe reserve the right to change this Privacy Notice at any time, so please re-visit this page frequently.",
+        "We will provide notice of substantial changes of this Privacy Notice on the Service and/or we will send you an e-mail regarding such changes to the e-mail address that you volunteered.",
+        "Such substantial changes will take effect seven (7) days after such notice was provided on any of the above-mentioned methods.",
+        "Otherwise, all other changes to this Privacy Notice are effective as of the stated “Last Revised” date, and your continued use of the Service after the Last Revised date will constitute acceptance of, and agreement to be bound by, those changes.",
+        "Last Revised: August 3, 2020",
+        "Otherwise, all other changes to this Privacy Notice are effective as of the stated “Last Revised” date, and your continued use of the Service after the Last Revised date will constitute acceptance of, and agreement to be bound by, those changes.\\n\\n",
+        "Updates to this policy\\nThis Privacy Policy is subject to modifications.",
+        "Please check the “Last Modified” heading at the bottom of this document to see when this Privacy Policy was last updated.",
+        "Any changes to this Privacy Policy will become effective when we post the revised Privacy Policy on the Website.",
+        "In case of material changes to this Privacy Policy, we will provide a notice in the Website.",
+        "Your use of the Website or the Service, or your provision of personal information following any changes means that you accept the updated Privacy Policy.\\n\\n \\n\\nLast modified: June 28, 2022"
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Text that explicitly describes the acceptance of policy amendments is fundamentally related to the topic of an updated policy.\",\n  \"The inclusion of a 'Last modified' date is a standard way to identify the most recent version of a document.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 30091,
+    "doc_id": 196,
+    "label_id": 13,
+    "label": "Updated Privacy Policy",
+    "doc_key": "DB_196",
+    "doc_total": 6,
+    "payload": {
+      "Sentence": "However, if we make changes that we believe will materially impact this Privacy Policy or your rights, we will promptly notify you of those changes.",
+      "Label": "Updated Privacy Policy",
+      "Document": [
+        "Last updated: August 30, 2022",
+        "Changes to This Privacy Policy\\nThis Privacy Policy was last updated on the date indicated above.",
+        "Our business and/or the Platform may change from time to time, and as a result, at times it may be necessary for UpLead to make changes to this Privacy Policy.",
+        "UpLead reserves the right to update or modify this Privacy Policy at any time and from time to time without prior notice.",
+        "However, if we make changes that we believe will materially impact this Privacy Policy or your rights, we will promptly notify you of those changes.",
+        "We encourage you to review this Privacy Policy from time to time."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Sentences that describe the procedure for notifying users about modifications to a policy are categorized under the topic of policy updates.\",\n  \"References to 'changes' that impact the content or legal implications of a document are characteristic of information regarding policy updates.\",\n  \"Content outlining the methods or timing for communicating alterations to terms or rights pertains to the subject of updating a privacy policy.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 12050,
+    "doc_id": 72,
+    "label_id": 13,
+    "label": "Updated Privacy Policy",
+    "doc_key": "DB_72",
+    "doc_total": 8,
+    "payload": {
+      "Sentence": "Last updated: May 3, 2022",
+      "Label": "Updated Privacy Policy",
+      "Document": [
+        "Last Revised: May 2022",
+        "Last updated: May 3, 2022",
+        "Last Modified: May 3, 2022",
+        "Changes to this Privacy Policy\\nFrom time to time, we may update this Privacy Policy.",
+        "Any changes to it will become effective when it is posted to our website.",
+        "Please check back to learn of any changes to this Privacy Policy.",
+        "Changes to this Privacy Policy",
+        "From time to time, we may update this Privacy Policy."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Phrases containing temporal markers such as 'Last updated' or 'Last revised' indicate the most recent modification date of a document.\",\n  \"A specific date following a modification indicator serves as evidence of a recent change to the document's content.\",\n  \"Information regarding the date of the most recent revision is a standard way to identify the status of an updated policy.\"\n]",
+    "parse_status": "ok"
+  },
+  {
+    "sentence_id": 44421,
+    "doc_id": 305,
+    "label_id": 13,
+    "label": "Updated Privacy Policy",
+    "doc_key": "WS_75",
+    "doc_total": 10,
+    "payload": {
+      "Sentence": "Continued use of our website, Products, or related services, following notice of such changes shall indicate your acknowledgement of such changes and agreement to be bound by the terms and conditions of such changes.",
+      "Label": "Updated Privacy Policy",
+      "Document": [
+        "Effective date: May 3, 2023",
+        "CHANGES TO THIS PRIVACY POLICY.",
+        "This Privacy Policy is subject to occasional revision, and if we make any substantial changes in the way we use your personal data, we will notify you by sending you an e-mail to the last e-mail address you provided to us and/or by prominently posting notice of the changes on our website.",
+        "Any material changes to this Privacy Policy will be effective upon the earlier of thirty (30) calendar days following our dispatch of an e-mail notice to you or thirty (30) calendar days following our posting of notice of the changes on our site.",
+        "These changes will be effective immediately for new users of our website, Products or related services.",
+        "Please note that at all times you are responsible for updating your personal data to provide us with your most current e-mail address.",
+        "In the event that the last e-mail address that you have provided us is not valid, or for any reason is not capable of delivering to you the notice described above, our dispatch of the e-mail containing such notice will nonetheless constitute effective notice of the changes described in the notice.",
+        "In any event, changes to this Privacy Policy may affect our use of personal data that you provided us prior to our notification to you of the changes.",
+        "If you do not wish to permit changes in our use of your personal data, you must notify us prior to the effective date of the changes that you wish to deactivate your account with us.",
+        "Continued use of our website, Products, or related services, following notice of such changes shall indicate your acknowledgement of such changes and agreement to be bound by the terms and conditions of such changes."
+      ]
+    },
+    "run_id": "colab-gemma4-01",
+    "model": "gemma4:26b-a4b-it-q4_K_M",
+    "raw_response": "[\n  \"Provisions describing how user actions constitute acceptance of modified terms are characteristic of sections detailing policy updates.\",\n  \"Language specifying that continued use of a service implies agreement to new terms is a standard feature of clauses regarding policy revisions.\",\n  \"Sentences that define the legal implications of post-notification behavior are inherently linked to the process of updating terms and conditions.\"\n]",
+    "parse_status": "ok"
+  }
+]
