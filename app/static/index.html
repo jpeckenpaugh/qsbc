@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>C3PA Explorer</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { padding-top: 70px; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .85em; }
+    .clip { max-height: 200px; overflow-y: auto; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark bg-dark fixed-top">
+  <div class="container-fluid">
+    <span class="navbar-brand mb-0 h1">C3PA Explorer</span>
+    <div class="d-flex gap-2" id="navTabs">
+      <button class="btn btn-sm btn-outline-light active" data-tab="stats">Stats</button>
+      <button class="btn btn-sm btn-outline-light" data-tab="documents">Documents</button>
+      <button class="btn btn-sm btn-outline-light" data-tab="sentences">Sentences</button>
+      <button class="btn btn-sm btn-outline-light" data-tab="labels">Labels</button>
+      <button class="btn btn-sm btn-outline-light" data-tab="reasonings">Reasonings</button>
+      <button class="btn btn-sm btn-outline-light" data-tab="prompt">Prompt</button>
+    </div>
+  </div>
+</nav>
+
+<main class="container-fluid px-4">
+
+  <!-- Stats -->
+  <section id="tab-stats" class="tab-pane">
+    <div class="row" id="statsCards"></div>
+    <div class="row mt-3">
+      <div class="col-md-6">
+        <div class="card"><div class="card-header">Label distribution (sentence-label pairs)</div>
+          <div class="card-body"><canvas id="labelChart" height="320"></canvas></div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card"><div class="card-header">Labels</div>
+          <ul class="list-group list-group-flush" id="statsLabelList"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Documents -->
+  <section id="tab-documents" class="tab-pane d-none">
+    <div class="card">
+      <div class="card-header d-flex align-items-center gap-2">
+        <span class="flex-grow-1">Documents <span class="badge text-bg-secondary" id="docCount"></span></span>
+        <select class="form-select form-select-sm w-auto" id="docSubsetFilter">
+          <option value="">All subsets</option>
+          <option value="DB">DB</option>
+          <option value="WS">WS</option>
+        </select>
+        <button class="btn btn-sm btn-outline-primary" data-page="prev">Prev</button>
+        <span class="mono" id="docPageInfo"></span>
+        <button class="btn btn-sm btn-outline-primary" data-page="next">Next</button>
+      </div>
+      <div class="table-responsive"><table class="table table-sm table-hover align-middle mb-0">
+        <thead><tr><th>#</th><th>Subset</th><th>Doc #</th><th>Source file</th><th>URL</th><th>Sentences</th><th>Labels</th></tr></thead>
+        <tbody id="docBody"></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- Sentences -->
+  <section id="tab-sentences" class="tab-pane d-none">
+    <div class="card">
+      <div class="card-header d-flex align-items-center gap-2 flex-wrap">
+        <span class="flex-grow-1">Sentences <span class="badge text-bg-secondary" id="sentCount"></span></span>
+        <input class="form-control form-control-sm w-auto" id="sentQ" placeholder="search text...">
+        <select class="form-select form-select-sm w-auto" id="sentDoc"><option value="">All documents</option></select>
+        <select class="form-select form-select-sm w-auto" id="sentLabel"><option value="">All labels</option></select>
+        <select class="form-select form-select-sm w-auto" id="sentLabelMode">
+          <option value="">All sentences</option>
+          <option value="single">Single label</option>
+          <option value="multi">Multi-label</option>
+        </select>
+        <button class="btn btn-sm btn-outline-primary" data-page="prev">Prev</button>
+        <span class="mono" id="sentPageInfo"></span>
+        <button class="btn btn-sm btn-outline-primary" data-page="next">Next</button>
+      </div>
+      <div class="table-responsive"><table class="table table-sm table-hover align-middle mb-0">
+        <thead><tr><th>ID</th><th>Doc</th><th>Sentence</th><th>Labels</th></tr></thead>
+        <tbody id="sentBody"></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- Labels -->
+  <section id="tab-labels" class="tab-pane d-none">
+    <div class="card"><div class="card-header">Labels</div>
+      <div class="table-responsive"><table class="table table-sm table-hover align-middle mb-0">
+        <thead><tr><th>ID</th><th>Name</th><th>Sentences</th></tr></thead>
+        <tbody id="labelBody"></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- Reasonings -->
+  <section id="tab-reasonings" class="tab-pane d-none">
+    <div class="card">
+      <div class="card-header d-flex align-items-center gap-2">
+        <span class="flex-grow-1">Reasonings <span class="badge text-bg-secondary" id="reasonCount"></span></span>
+        <button class="btn btn-sm btn-outline-primary" data-page="prev">Prev</button>
+        <span class="mono" id="reasonPageInfo"></span>
+        <button class="btn btn-sm btn-outline-primary" data-page="next">Next</button>
+      </div>
+      <div id="reasonBody" class="card-body"></div>
+    </div>
+  </section>
+
+  <!-- Prompt -->
+  <section id="tab-prompt" class="tab-pane d-none">
+    <div class="card">
+      <div class="card-header d-flex align-items-center gap-2 flex-wrap">
+        <span class="flex-grow-1">Prompt builder</span>
+        <select class="form-select form-select-sm w-auto" id="promptSentence"><option value="">Random sentence</option></select>
+        <input class="form-control form-control-sm w-auto" id="promptMin" type="number" min="1" max="10" value="2" title="min statements">
+        <input class="form-control form-control-sm w-auto" id="promptMax" type="number" min="1" max="10" value="5" title="max statements">
+        <label class="form-check-label ms-2"><input class="form-check-input" type="checkbox" id="promptGeneralize" checked> generalize</label>
+        <button class="btn btn-sm btn-outline-primary" id="promptNew">New / reload</button>
+        <button class="btn btn-sm btn-outline-success" id="promptCopy">Copy</button>
+      </div>
+      <div class="card-body">
+        <pre class="mono p-3 mb-2 bg-body-tertiary rounded" id="promptText" style="white-space:pre-wrap"></pre>
+        <div class="text-secondary small" id="promptMeta"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sentence detail modal -->
+  <div class="modal fade" id="sentenceModal" tabindex="-1">
+    <div class="modal-dialog modal-lg"><div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title" id="modalTitle"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body" id="modalBody"></div>
+    </div></div>
+  </div>
+
+  <!-- Reasoning detail modal -->
+  <div class="modal fade" id="reasoningModal" tabindex="-1">
+    <div class="modal-dialog modal-lg"><div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title" id="reasoningModalTitle"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body" id="reasoningModalBody"></div>
+    </div></div>
+  </div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+const LIMIT = 25;
+const state = { tab: "stats", docOffset: 0, sentOffset: 0, reasonOffset: 0 };
+let labelChart = null;
+
+async function api(path) {
+  const r = await fetch(path);
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+}
+function labelBadges(labels) {
+  const colors = ["primary","success","danger","warning","info","secondary","dark"];
+  return labels.map((l, i) => `<span class="badge text-bg-${colors[i % colors.length]}">${esc(l)}</span>`).join(" ");
+}
+
+// ---- Stats ----
+async function loadStats() {
+  const s = await api("/api/stats");
+  const cards = [
+    ["Documents", s.documents], ["Sentences", s.sentences], ["Sentence-label pairs", s.sentence_labels],
+    ["Labels", s.labels], ["Single-label (no Others)", s.single_label_sentences], ["Reasonings", s.reasonings],
+  ];
+  document.getElementById("statsCards").innerHTML = cards.map(([t, v]) => `
+    <div class="col-md-2 mb-3"><div class="card text-center"><div class="card-body">
+      <div class="fs-3">${v.toLocaleString()}</div><div class="text-secondary">${t}</div>
+    </div></div></div>`).join("");
+  document.getElementById("statsLabelList").innerHTML = s.per_label.map(x => `
+    <li class="list-group-item d-flex justify-content-between"><span>${esc(x.label)}</span>
+    <span class="badge text-bg-secondary">${x.count.toLocaleString()}</span></li>`).join("");
+  if (labelChart) labelChart.destroy();
+  labelChart = new Chart(document.getElementById("labelChart"), {
+    type: "bar",
+    data: { labels: s.per_label.map(x => x.label), datasets: [{ data: s.per_label.map(x => x.count), backgroundColor: "rgba(13,110,253,.7)" }] },
+    options: { indexAxis: "y", plugins: { legend: { display: false } } }
+  });
+}
+
+// ---- Documents ----
+async function loadDocuments() {
+  const subset = document.getElementById("docSubsetFilter").value;
+  const d = await api(`/api/documents?limit=${LIMIT}&offset=${state.docOffset}&subset=${subset}`);
+  document.getElementById("docCount").textContent = d.total.toLocaleString();
+  document.getElementById("docPageInfo").textContent = `${state.docOffset + 1}-${Math.min(state.docOffset + LIMIT, d.total)} / ${d.total}`;
+  document.getElementById("docBody").innerHTML = d.items.map(x => `
+    <tr>
+      <td class="mono">${x.id}</td><td>${esc(x.subset)}</td><td>${x.doc_num}</td>
+      <td class="mono">${esc(x.source_file)}</td>
+      <td class="text-truncate" style="max-width:320px"><a href="${esc(x.url)}" target="_blank">${esc(x.url || "")}</a></td>
+      <td>${x.sentences}</td><td>${x.label_count}</td>
+    </tr>`).join("");
+}
+
+// ---- Sentences ----
+async function loadSentenceFilters() {
+  if (document.getElementById("sentDoc").options.length > 1) return;
+  const d = await api("/api/documents?limit=500");
+  document.getElementById("sentDoc").insertAdjacentHTML("beforeend",
+    d.items.map(x => `<option value="${x.id}">${x.id} · ${esc(x.source_file)}</option>`).join(""));
+  const l = await api("/api/labels");
+  document.getElementById("sentLabel").insertAdjacentHTML("beforeend",
+    l.map(x => `<option value="${x.id}">${esc(x.name)}</option>`).join(""));
+}
+
+async function loadSentences() {
+  const doc = document.getElementById("sentDoc").value;
+  const label = document.getElementById("sentLabel").value;
+  const labelMode = document.getElementById("sentLabelMode").value;
+  const q = document.getElementById("sentQ").value.trim();
+  const params = new URLSearchParams({ limit: LIMIT, offset: state.sentOffset });
+  if (doc) params.set("doc_id", doc);
+  if (label) params.set("label_id", label);
+  if (labelMode) params.set("label_mode", labelMode);
+  if (q) params.set("q", q);
+  const d = await api(`/api/sentences?${params}`);
+  document.getElementById("sentCount").textContent = d.total.toLocaleString();
+  document.getElementById("sentPageInfo").textContent = `${state.sentOffset + 1}-${Math.min(state.sentOffset + LIMIT, d.total)} / ${d.total}`;
+  document.getElementById("sentBody").innerHTML = d.items.map(x => `
+    <tr style="cursor:pointer" onclick="openSentence(${x.id})">
+      <td class="mono">${x.id}</td><td class="mono">${esc(x.doc_key)}</td>
+      <td>${esc(x.text)}</td><td>${labelBadges(x.labels)}</td>
+    </tr>`).join("");
+}
+
+async function openSentence(id) {
+  const s = await api(`/api/sentences/${id}`);
+  document.getElementById("modalTitle").innerHTML = `Sentence #${s.id} — ${esc(s.doc_key)}`;
+  document.getElementById("modalBody").innerHTML = `
+    <p class="lead">${esc(s.text)}</p>
+    <p>Labels: ${labelBadges(s.labels.map(l => l.name))}</p>
+    <p class="text-secondary">Source: <span class="mono">${esc(s.source_file || "")}</span>
+    ${s.url ? ` · <a href="${esc(s.url)}" target="_blank">${esc(s.url)}</a>` : ""}</p>
+    <h6 class="mt-3">Reasonings</h6>
+    ${s.reasonings.length ? s.reasonings.map(r => `
+      <div class="border rounded p-2 mb-2">
+        <div class="d-flex justify-content-between">
+          <span class="mono">${esc(r.run_id)} · ${esc(r.model || "?")}</span>
+          <span>${r.parse_status === "ok" ? '<span class="badge text-bg-success">parsed</span>' : '<span class="badge text-bg-danger">unparseable</span>'} · ${esc(r.created_at)}</span>
+        </div>
+        ${r.parse_status === "ok"
+          ? `<ol class="mb-1">${r.parsed.map(p => `<li>${esc(p)}</li>`).join("")}</ol>`
+          : `<div class="clip small text-secondary">${esc(r.raw_response)}</div>`}
+      </div>`).join("") : `<div class="text-secondary">None yet.</div>`}`;
+  new bootstrap.Modal(document.getElementById("sentenceModal")).show();
+}
+
+// ---- Labels ----
+async function loadLabels() {
+  const l = await api("/api/labels");
+  document.getElementById("labelBody").innerHTML = l.map(x => `
+    <tr><td class="mono">${x.id}</td><td>${esc(x.name)}</td><td>${x.count.toLocaleString()}</td></tr>`).join("");
+}
+
+// ---- Reasonings ----
+async function loadReasonings() {
+  const d = await api(`/api/reasonings?limit=${LIMIT}&offset=${state.reasonOffset}`);
+  document.getElementById("reasonCount").textContent = d.total.toLocaleString();
+  document.getElementById("reasonPageInfo").textContent = `${state.reasonOffset + 1}-${Math.min(state.reasonOffset + LIMIT, d.total)} / ${d.total}`;
+  document.getElementById("reasonBody").innerHTML = d.items.length ? d.items.map(r => `
+    <div class="border rounded p-2 mb-2" style="cursor:pointer" onclick="openReasoning(${r.id})">
+      <div class="d-flex justify-content-between">
+        <span class="mono">#${r.id} · ${esc(r.doc_key)} · <span class="badge text-bg-info">${esc(r.label)}</span> · ${esc(r.run_id)}</span>
+        <span>${r.parse_status === "ok" ? '<span class="badge text-bg-success">parsed</span>' : '<span class="badge text-bg-danger">unparseable</span>'} · ${esc(r.model || "?")} · ${esc(r.created_at)}</span>
+      </div>
+      <div class="small text-secondary mb-1">${esc(r.text)}</div>
+      ${r.parse_status === "ok"
+        ? `<ol class="mb-0">${r.parsed.map(p => `<li>${esc(p)}</li>`).join("")}</ol>`
+        : `<div class="clip small">${esc(r.raw_response)}</div>`}
+    </div>`).join("") : `<div class="text-secondary">No reasonings yet.</div>`;
+}
+
+async function openReasoning(id) {
+  const r = await api(`/api/reasonings/${id}`);
+  document.getElementById("reasoningModalTitle").innerHTML =
+    `Reasoning #${r.id} — ${esc(r.doc_key)} · <span class="badge text-bg-info">${esc(r.label)}</span>`;
+  document.getElementById("reasoningModalBody").innerHTML = `
+    <dl class="row mb-2">
+      <dt class="col-sm-3">Sentence</dt><dd class="col-sm-9"><span class="mono">${r.sentence_id}</span> · ${esc(r.text)}</dd>
+      <dt class="col-sm-3">Run</dt><dd class="col-sm-9 mono">${esc(r.run_id)}</dd>
+      <dt class="col-sm-3">Model</dt><dd class="col-sm-9">${esc(r.model || "?")}</dd>
+      <dt class="col-sm-3">Status</dt><dd class="col-sm-9">${r.parse_status === "ok" ? '<span class="badge text-bg-success">parsed</span>' : '<span class="badge text-bg-danger">unparseable</span>'}</dd>
+      <dt class="col-sm-3">Created</dt><dd class="col-sm-9">${esc(r.created_at)}</dd>
+    </dl>
+    <h6>Extracted statements (${r.parsed ? r.parsed.length : 0})</h6>
+    ${r.parsed ? `<ol>${r.parsed.map(p => `<li>${esc(p)}</li>`).join("")}</ol>` : `<div class="text-danger">No statements extracted.</div>`}
+    <h6 class="mt-3">Raw response</h6>
+    <pre class="mono p-2 bg-body-tertiary rounded clip" style="white-space:pre-wrap">${esc(r.raw_response)}</pre>`;
+  new bootstrap.Modal(document.getElementById("reasoningModal")).show();
+}
+
+// ---- Prompt ----
+let promptState = { sentenceId: "" };
+async function loadPrompt() {
+  const min = document.getElementById("promptMin").value || 2;
+  const max = document.getElementById("promptMax").value || 5;
+  const gen = document.getElementById("promptGeneralize").checked;
+  const url = promptState.sentenceId
+    ? `/api/prompt/${promptState.sentenceId}?min_n=${min}&max_n=${max}&generalize=${gen}`
+    : `/api/prompt/random?min_n=${min}&max_n=${max}&generalize=${gen}`;
+  const d = await api(url);
+  document.getElementById("promptText").textContent = d.prompt;
+  document.getElementById("promptMeta").innerHTML =
+    `sentence <span class="mono">${d.sentence_id}</span> · doc <span class="mono">${esc(d.doc_key)}</span> · label <span class="badge text-bg-info">${esc(d.label)}</span> · ${d.min}-${d.max} · generalize=${d.generalize}`;
+}
+async function loadPromptSentences() {
+  if (document.getElementById("promptSentence").options.length > 1) return;
+  const d = await api("/api/documents?limit=500");
+  const sents = await Promise.all(d.items.slice(0, 20).map(x =>
+    api(`/api/sentences?doc_id=${x.id}&limit=1`)));
+  document.getElementById("promptSentence").insertAdjacentHTML("beforeend",
+    sents.filter(x => x.items.length).map(x => `<option value="${x.items[0].id}">#${x.items[0].id} · ${esc(x.items[0].doc_key)}</option>`).join(""));
+}
+
+// ---- navigation / events ----
+document.getElementById("navTabs").addEventListener("click", async (e) => {
+  const btn = e.target.closest("button");
+  if (!btn) return;
+  document.querySelectorAll("#navTabs button").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  document.querySelectorAll(".tab-pane").forEach(p => p.classList.add("d-none"));
+  const tab = btn.dataset.tab;
+  state.tab = tab;
+  document.getElementById(`tab-${tab}`).classList.remove("d-none");
+  const fn = { stats: loadStats, documents: loadDocuments, sentences: loadSentences, labels: loadLabels, reasonings: loadReasonings, prompt: loadPrompt }[tab];
+  try { await fn(); } catch (err) { console.error(err); }
+});
+
+document.addEventListener("click", async (e) => {
+  const btn = e.target.closest("[data-page]");
+  if (!btn) return;
+  if (state.tab === "documents") state.docOffset = Math.max(0, state.docOffset + (btn.dataset.page === "next" ? LIMIT : -LIMIT)), loadDocuments();
+  if (state.tab === "sentences") state.sentOffset = Math.max(0, state.sentOffset + (btn.dataset.page === "next" ? LIMIT : -LIMIT)), loadSentences();
+  if (state.tab === "reasonings") state.reasonOffset = Math.max(0, state.reasonOffset + (btn.dataset.page === "next" ? LIMIT : -LIMIT)), loadReasonings();
+});
+
+["docSubsetFilter"].forEach(id => document.getElementById(id).addEventListener("change", () => { state.docOffset = 0; loadDocuments(); }));
+["sentDoc", "sentLabel", "sentLabelMode"].forEach(id => document.getElementById(id).addEventListener("change", () => { state.sentOffset = 0; loadSentences(); }));
+let qTimer;
+document.getElementById("sentQ").addEventListener("input", () => {
+  clearTimeout(qTimer);
+  qTimer = setTimeout(() => { state.sentOffset = 0; loadSentences(); }, 400);
+});
+document.getElementById("promptNew").addEventListener("click", loadPrompt);
+document.getElementById("promptCopy").addEventListener("click", () => {
+  navigator.clipboard.writeText(document.getElementById("promptText").textContent);
+});
+document.getElementById("promptSentence").addEventListener("change", (e) => {
+  promptState.sentenceId = e.target.value;
+  loadPrompt();
+});
+["promptMin", "promptMax", "promptGeneralize"].forEach(id =>
+  document.getElementById(id).addEventListener("change", loadPrompt));
+
+(async () => { await loadStats(); await loadSentenceFilters(); await loadPromptSentences(); })();
+</script>
+</body>
+</html>

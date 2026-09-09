@@ -1,0 +1,7 @@
+.venv
+.git
+data
+C3PA_Dataset
+__pycache__
+*.pyc
+.env

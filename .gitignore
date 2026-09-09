@@ -1,0 +1,20 @@
+# Environment / secrets
+.env
+.env.local
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Generated / external data
+C3PA_Dataset/
+data/
+*.tsv
+
+# macOS
+.DS_Store
+
+# Node
+node_modules/
