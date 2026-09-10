@@ -1,70 +1,10 @@
-"""Reasoning-thought normalization, storage, and sync/backfill logic.
+"""Reasoning-thought storage, and sync/backfill logic.
 
 A "reasoning" is a collection of statements an agent produces explaining why a
 sentence carries a label. Each individual statement is a "thought". This module
-normalizes thought text into a canonical key (for overlap/duplicate detection)
-and maintains a `thoughts` table plus a `thoughts_sync` watermark so we can tell
+maintains a `thoughts` table plus a `thoughts_sync` watermark so we can tell
 when new reasonings are out of sync with their extracted thoughts.
 """
-
-import re
-import unicodedata
-
-# ------------------------------------------------------------------ nltk ----
-
-_lemmatizer = None
-_lemmatizer_checked = False
-
-
-def _get_lemmatizer():
-    """Lazily load a WordNet lemmatizer. Returns None if unavailable (so the
-    pipeline degrades gracefully until the container is rebuilt with nltk)."""
-    global _lemmatizer, _lemmatizer_checked
-    if not _lemmatizer_checked:
-        _lemmatizer_checked = True
-        try:
-            import nltk
-            from nltk.stem import WordNetLemmatizer
-
-            try:
-                nltk.data.find("corpora/wordnet")
-            except LookupError:
-                nltk.download("wordnet", quiet=True)
-            _lemmatizer = WordNetLemmatizer()
-        except Exception:
-            _lemmatizer = None
-    return _lemmatizer
-
-
-# Tokenizer: words (lowercased later) or numbers (kept as values).
-_TOKEN_RE = re.compile(r"[a-zA-Z]+|\d+(?:[.,]\d+)*")
-
-
-def normalize(thought, lemmatize=True):
-    """Return a canonical, comparable form of a thought.
-
-    Pipeline: NFKC -> casefold -> tokenize words/numbers -> strip thousands
-    commas -> (optional) lemmatize words -> join with single spaces.
-
-    Meaningful numeric values are preserved (not collapsed to a placeholder),
-    so threshold/amount thoughts are not over-merged.
-    """
-    if not thought:
-        return ""
-    text = unicodedata.normalize("NFKC", thought).casefold()
-    tokens = _TOKEN_RE.findall(text)
-    out = []
-    for tok in tokens:
-        if tok.isdigit() or (tok[0].isdigit()):
-            out.append(tok.replace(",", ""))
-            continue
-        if lemmatize:
-            lemmatizer = _get_lemmatizer()
-            if lemmatizer is not None:
-                tok = lemmatizer.lemmatize(tok, "v")
-        out.append(tok)
-    return " ".join(out)
-
 
 # ----------------------------------------------------------------- schema ----
 
@@ -78,11 +18,9 @@ SCHEMA_DDL = [
         run_id       TEXT NOT NULL,
         pos          INTEGER NOT NULL,
         text         TEXT NOT NULL,
-        norm         TEXT NOT NULL,
         UNIQUE (reasoning_id, pos)
     )
     """,
-    "CREATE INDEX IF NOT EXISTS thoughts_norm_idx ON thoughts (norm)",
     "CREATE INDEX IF NOT EXISTS thoughts_reasoning_id_idx ON thoughts (reasoning_id)",
     "CREATE INDEX IF NOT EXISTS thoughts_run_id_idx ON thoughts (run_id)",
     "CREATE INDEX IF NOT EXISTS thoughts_label_id_idx ON thoughts (label_id)",
@@ -99,6 +37,9 @@ SCHEMA_DDL = [
 def ensure_schema(conn):
     for ddl in SCHEMA_DDL:
         conn.execute(ddl)
+    # Idempotent migration from the old norm-keyed schema.
+    conn.execute("DROP INDEX IF EXISTS thoughts_norm_idx")
+    conn.execute("ALTER TABLE thoughts DROP COLUMN IF EXISTS norm")
 
 
 def watermark(conn):
@@ -123,14 +64,14 @@ def insert_for_reasoning(conn, reasoning_id, sentence_id, label_id, run_id, pars
     if not parsed:
         return 0
     rows = [
-        (reasoning_id, sentence_id, label_id, run_id, i, s, normalize(s))
+        (reasoning_id, sentence_id, label_id, run_id, i, s)
         for i, s in enumerate(parsed)
     ]
     for row in rows:
         conn.execute(
             """
-            INSERT INTO thoughts (reasoning_id, sentence_id, label_id, run_id, pos, text, norm)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO thoughts (reasoning_id, sentence_id, label_id, run_id, pos, text)
+            VALUES (%s, %s, %s, %s, %s, %s)
             ON CONFLICT (reasoning_id, pos) DO NOTHING
             """,
             row,

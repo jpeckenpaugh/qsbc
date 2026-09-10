@@ -45,7 +45,9 @@ def stats():
               (SELECT count(*) FROM sentence_labels),
               (SELECT count(*) FROM labels),
               (SELECT count(*) FROM reasonings),
-              (SELECT count(*) FROM v_single_label_sentences)
+              (SELECT count(*) FROM v_single_label_sentences),
+              (SELECT count(*) FROM thoughts),
+              (SELECT count(*) FROM ideas)
             """
         ).fetchone()
         per_label = conn.execute(
@@ -64,6 +66,8 @@ def stats():
         "labels": totals[3],
         "reasonings": totals[4],
         "single_label_sentences": totals[5],
+        "thoughts": totals[6],
+        "ideas": totals[7],
         "per_label": [{"label": r[0], "count": r[1]} for r in per_label],
     }
 
@@ -471,13 +475,13 @@ def list_thoughts(
         where.append("c.run_id = %s")
         params.append(run_id)
     if q:
-        where.append("c.norm LIKE %s")
-        params.append(f"%{thoughts.normalize(q)}%")
+        where.append("c.text ILIKE %s")
+        params.append(f"%{q}%")
     cond = " AND ".join(where)
     with pool.connection() as conn:
         rows = conn.execute(
             f"""
-            SELECT c.id, c.sentence_id, c.label_id, c.run_id, c.pos, c.text, c.norm,
+            SELECT c.id, c.sentence_id, c.label_id, c.run_id, c.pos, c.text,
                    d.doc_key, l.name, s.text
             FROM thoughts c
             JOIN reasonings r ON r.id = c.reasoning_id
@@ -498,8 +502,8 @@ def list_thoughts(
         "items": [
             {
                 "id": r[0], "sentence_id": r[1], "label_id": r[2],
-                "run_id": r[3], "pos": r[4], "text": r[5], "norm": r[6],
-                "doc_key": r[7], "label": r[8], "sentence_text": r[9],
+                "run_id": r[3], "pos": r[4], "text": r[5],
+                "doc_key": r[6], "label": r[7], "sentence_text": r[8],
             }
             for r in rows
         ],
@@ -523,12 +527,12 @@ def thoughts_overlap(
         total_occ = conn.execute(
             f"SELECT count(*) FROM thoughts c WHERE {cond}", params
         ).fetchone()[0]
-        # distinct norms that occur exactly once vs more than once
+        # distinct texts that occur exactly once vs more than once
         uniq = conn.execute(
             f"""
             SELECT count(*) FROM (
-                SELECT c.norm FROM thoughts c
-                WHERE {cond} GROUP BY c.norm HAVING count(*) = 1
+                SELECT c.text FROM thoughts c
+                WHERE {cond} GROUP BY c.text HAVING count(*) = 1
             ) u
             """,
             params,
@@ -536,8 +540,8 @@ def thoughts_overlap(
         rep_occ = conn.execute(
             f"""
             SELECT count(*) FROM (
-                SELECT c.norm FROM thoughts c
-                WHERE {cond} GROUP BY c.norm HAVING count(*) > 1
+                SELECT c.text FROM thoughts c
+                WHERE {cond} GROUP BY c.text HAVING count(*) > 1
             ) r
             """,
             params,
@@ -546,7 +550,7 @@ def thoughts_overlap(
             f"""
             SELECT COALESCE(sum(cnt), 0) FROM (
                 SELECT count(*) AS cnt FROM thoughts c
-                WHERE {cond} GROUP BY c.norm HAVING count(*) > 1
+                WHERE {cond} GROUP BY c.text HAVING count(*) > 1
             ) r
             """,
             params,
@@ -555,7 +559,7 @@ def thoughts_overlap(
             f"""
             SELECT COALESCE(max(cnt), 0) FROM (
                 SELECT count(*) AS cnt FROM thoughts c
-                WHERE {cond} GROUP BY c.norm
+                WHERE {cond} GROUP BY c.text
             ) g
             """,
             params,
@@ -563,9 +567,9 @@ def thoughts_overlap(
         # distribution of occurrence counts
         dist = conn.execute(
             f"""
-            SELECT cnt, count(*) AS norms FROM (
+            SELECT cnt, count(*) AS thoughts FROM (
                 SELECT count(*) AS cnt FROM thoughts c
-                WHERE {cond} GROUP BY c.norm
+                WHERE {cond} GROUP BY c.text
             ) g GROUP BY cnt ORDER BY cnt
             """,
             params,
@@ -600,13 +604,13 @@ def list_thoughts_aggregated(
         where.append("c.run_id = %s")
         params.append(run_id)
     if q:
-        where.append("c.norm LIKE %s")
-        params.append(f"%{thoughts.normalize(q)}%")
+        where.append("c.text ILIKE %s")
+        params.append(f"%{q}%")
     cond = " AND ".join(where)
     with pool.connection() as conn:
         rows = conn.execute(
             f"""
-            SELECT c.norm,
+            SELECT c.text,
                    count(*)                       AS occurrences,
                    count(DISTINCT c.sentence_id)  AS sentences,
                    count(DISTINCT c.label_id)     AS labels,
@@ -614,9 +618,9 @@ def list_thoughts_aggregated(
                    max(c.text)                    AS example
             FROM thoughts c
             WHERE {cond}
-            GROUP BY c.norm
+            GROUP BY c.text
             HAVING count(*) >= %s
-            ORDER BY occurrences DESC, c.norm
+            ORDER BY occurrences DESC, c.text
             LIMIT %s OFFSET %s
             """,
             (*params, min_occurrences, limit, offset),
@@ -624,9 +628,9 @@ def list_thoughts_aggregated(
         total = conn.execute(
             f"""
             SELECT count(*) FROM (
-                SELECT c.norm FROM thoughts c
+                SELECT c.text FROM thoughts c
                 WHERE {cond}
-                GROUP BY c.norm HAVING count(*) >= %s
+                GROUP BY c.text HAVING count(*) >= %s
             ) g
             """,
             (*params, min_occurrences),
@@ -635,7 +639,7 @@ def list_thoughts_aggregated(
         "total": total,
         "items": [
             {
-                "norm": r[0], "occurrences": r[1], "sentences": r[2],
+                "text": r[0], "occurrences": r[1], "sentences": r[2],
                 "labels": r[3], "runs": r[4], "example": r[5],
             }
             for r in rows
@@ -666,16 +670,16 @@ def idea_status():
 def compute_ideas(
     threshold: float = Query(default=0.8, ge=0.0, le=1.0),
 ):
-    """Recompute semantic Ideas over all distinct normalized thoughts."""
+    """Recompute semantic Ideas over all distinct thought texts."""
     with pool.connection() as conn:
-        norms = [r[0] for r in conn.execute("SELECT DISTINCT norm FROM thoughts").fetchall()]
-    if not norms:
+        texts = [r[0] for r in conn.execute("SELECT DISTINCT text FROM thoughts").fetchall()]
+    if not texts:
         raise HTTPException(status_code=400, detail="no thoughts to cluster")
-    ideas_list, failed = ideas.build_ideas(norms, threshold=threshold)
+    ideas_list, failed = ideas.build_ideas(texts, threshold=threshold)
     with pool.connection() as conn:
         stats = ideas.store_ideas(conn, ideas_list, threshold)
     return {
-        "norms": len(norms),
+        "texts": len(texts),
         "failed": failed,
         "threshold": threshold,
         **stats,
@@ -691,12 +695,12 @@ def list_ideas(
     with pool.connection() as conn:
         rows = conn.execute(
             """
-            SELECT cl.id, cl.size, cl.threshold, cl.created_at, cl.central_norm,
-                   (SELECT t.text FROM thoughts t WHERE t.norm = cl.central_norm ORDER BY t.id LIMIT 1) AS central_text,
-                   array_agg(cnc.norm ORDER BY cnc.norm) AS norms
+            SELECT cl.id, cl.size, cl.threshold, cl.created_at, cl.central,
+                   array_agg(t.text ORDER BY t.text) AS texts
             FROM ideas cl
             JOIN thought_idea cnc ON cnc.idea_id = cl.id
-            GROUP BY cl.id
+            JOIN thoughts t ON t.id = cnc.thought_id
+            GROUP BY cl.id, cl.size, cl.threshold, cl.created_at, cl.central
             ORDER BY cl.size DESC, cl.id
             LIMIT %s OFFSET %s
             """,
@@ -709,8 +713,8 @@ def list_ideas(
             {
                 "id": r[0], "size": r[1], "threshold": r[2],
                 "created_at": r[3].isoformat(),
-                "central": {"norm": r[4], "text": r[5]},
-                "norms": r[6],
+                "central": r[4],
+                "texts": r[5],
             }
             for r in rows
         ],
@@ -722,7 +726,7 @@ def thought_detail(thought_id: int):
     with pool.connection() as conn:
         thought = conn.execute(
             """
-            SELECT c.id, c.pos, c.text, c.norm, c.run_id,
+            SELECT c.id, c.pos, c.text, c.run_id,
                    c.reasoning_id, c.sentence_id, c.label_id
             FROM thoughts c
             WHERE c.id = %s
@@ -736,7 +740,7 @@ def thought_detail(thought_id: int):
             SELECT r.run_id, r.model, r.parse_status, r.created_at
             FROM reasonings r WHERE r.id = %s
             """,
-            (thought[5],),
+            (thought[4],),
         ).fetchone()
         sent = conn.execute(
             """
@@ -744,22 +748,22 @@ def thought_detail(thought_id: int):
             FROM sentences s JOIN documents d ON d.id = s.doc_id
             WHERE s.id = %s
             """,
-            (thought[6],),
+            (thought[5],),
         ).fetchone()
         label = conn.execute(
-            "SELECT name FROM labels WHERE id = %s", (thought[7],)
+            "SELECT name FROM labels WHERE id = %s", (thought[6],)
         ).fetchone()
         idea = conn.execute(
             """
             SELECT i.id, i.size, i.threshold, i.created_at
             FROM thought_idea ti JOIN ideas i ON i.id = ti.idea_id
-            WHERE ti.norm = %s
+            WHERE ti.thought_id = %s
             """,
-            (thought[3],),
+            (thought[0],),
         ).fetchone()
     return {
         "id": thought[0], "pos": thought[1], "text": thought[2],
-        "norm": thought[3], "run_id": thought[4],
+        "run_id": thought[3],
         "idea": {
             "id": idea[0], "size": idea[1], "threshold": idea[2],
             "created_at": idea[3].isoformat(),
@@ -781,8 +785,7 @@ def idea_detail(idea_id: int):
     with pool.connection() as conn:
         idea = conn.execute(
             """
-            SELECT id, size, threshold, created_at, central_norm,
-                   (SELECT t.text FROM thoughts t WHERE t.norm = i.central_norm ORDER BY t.id LIMIT 1) AS central_text
+            SELECT id, size, threshold, created_at, central
             FROM ideas i WHERE id = %s
             """,
             (idea_id,),
@@ -791,10 +794,10 @@ def idea_detail(idea_id: int):
             raise HTTPException(status_code=404, detail="not found")
         thought_rows = conn.execute(
             """
-            SELECT c.id, c.pos, c.text, c.norm, c.run_id,
+            SELECT c.id, c.pos, c.text, c.run_id,
                    c.reasoning_id, c.sentence_id, c.label_id
             FROM thoughts c
-            JOIN thought_idea ti ON ti.norm = c.norm
+            JOIN thought_idea ti ON ti.thought_id = c.id
             WHERE ti.idea_id = %s
             ORDER BY c.id
             """,
@@ -807,7 +810,7 @@ def idea_detail(idea_id: int):
                 SELECT r.run_id, r.model, r.parse_status, r.created_at
                 FROM reasonings r WHERE r.id = %s
                 """,
-                (c[5],),
+                (c[4],),
             ).fetchone()
             sent = conn.execute(
                 """
@@ -815,13 +818,13 @@ def idea_detail(idea_id: int):
                 FROM sentences s JOIN documents d ON d.id = s.doc_id
                 WHERE s.id = %s
                 """,
-                (c[6],),
+                (c[5],),
             ).fetchone()
             label = conn.execute(
-                "SELECT name FROM labels WHERE id = %s", (c[7],)
+                "SELECT name FROM labels WHERE id = %s", (c[6],)
             ).fetchone()
             thoughts.append({
-                "id": c[0], "pos": c[1], "text": c[2], "norm": c[3], "run_id": c[4],
+                "id": c[0], "pos": c[1], "text": c[2], "run_id": c[3],
                 "reasoning": {
                     "run_id": reason[0], "model": reason[1],
                     "parse_status": reason[2], "created_at": reason[3].isoformat(),
@@ -835,7 +838,7 @@ def idea_detail(idea_id: int):
     return {
         "id": idea[0], "size": idea[1], "threshold": idea[2],
         "created_at": idea[3].isoformat(),
-        "central": {"norm": idea[4], "text": idea[5]},
+        "central": idea[4],
         "thoughts": thoughts,
     }
 

@@ -20,12 +20,11 @@
       <button class="btn btn-sm btn-outline-light active" data-tab="qsbc">QSBC</button>
       <button class="btn btn-sm btn-outline-light" data-tab="c3pa">C3PA</button>
       <button class="btn btn-sm btn-outline-light" data-tab="labels">Labels</button>
-      <button class="btn btn-sm btn-outline-light" data-tab="sentences">Sentences</button>
       <button class="btn btn-sm btn-outline-light" data-tab="documents">Documents</button>
+      <button class="btn btn-sm btn-outline-light" data-tab="sentences">Sentences</button>
       <button class="btn btn-sm btn-outline-light" data-tab="reasonings">Reasonings</button>
       <button class="btn btn-sm btn-outline-light" data-tab="thoughts">Thoughts <span class="badge text-bg-warning d-none" id="thoughtsSyncBadge"></span></button>
       <button class="btn btn-sm btn-outline-light" data-tab="ideas">Ideas</button>
-      <button class="btn btn-sm btn-outline-light" data-tab="prompt">Prompt</button>
     </div>
   </div>
 </nav>
@@ -142,14 +141,37 @@
 
   <!-- Reasonings -->
   <section id="tab-reasonings" class="tab-pane d-none">
-    <div class="card">
-      <div class="card-header d-flex align-items-center gap-2">
-        <span class="flex-grow-1">Reasonings <span class="badge text-bg-secondary" id="reasonCount"></span></span>
-        <button class="btn btn-sm btn-outline-primary" data-page="prev">Prev</button>
-        <span class="mono" id="reasonPageInfo"></span>
-        <button class="btn btn-sm btn-outline-primary" data-page="next">Next</button>
+    <ul class="nav nav-pills mb-3">
+      <li class="nav-item"><button class="nav-link active" id="reasoningsSub" type="button">Reasonings</button></li>
+      <li class="nav-item"><button class="nav-link" id="promptSub" type="button">Prompt</button></li>
+    </ul>
+    <div id="reasoningsPane">
+      <div class="card">
+        <div class="card-header d-flex align-items-center gap-2">
+          <span class="flex-grow-1">Reasonings <span class="badge text-bg-secondary" id="reasonCount"></span></span>
+          <button class="btn btn-sm btn-outline-primary" data-page="prev">Prev</button>
+          <span class="mono" id="reasonPageInfo"></span>
+          <button class="btn btn-sm btn-outline-primary" data-page="next">Next</button>
+        </div>
+        <div id="reasonBody" class="card-body"></div>
       </div>
-      <div id="reasonBody" class="card-body"></div>
+    </div>
+    <div id="promptPane" class="d-none">
+      <div class="card">
+        <div class="card-header d-flex align-items-center gap-2 flex-wrap">
+          <span class="flex-grow-1">Prompt builder</span>
+          <select class="form-select form-select-sm w-auto" id="promptSentence"><option value="">Random sentence</option></select>
+          <input class="form-control form-control-sm w-auto" id="promptMin" type="number" min="1" max="10" value="2" title="min statements">
+          <input class="form-control form-control-sm w-auto" id="promptMax" type="number" min="1" max="10" value="5" title="max statements">
+          <label class="form-check-label ms-2"><input class="form-check-input" type="checkbox" id="promptGeneralize" checked> generalize</label>
+          <button class="btn btn-sm btn-outline-primary" id="promptNew">New / reload</button>
+          <button class="btn btn-sm btn-outline-success" id="promptCopy">Copy</button>
+        </div>
+        <div class="card-body">
+          <pre class="mono p-3 mb-2 bg-body-tertiary rounded" id="promptText" style="white-space:pre-wrap"></pre>
+          <div class="text-secondary small" id="promptMeta"></div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -157,7 +179,7 @@
   <section id="tab-thoughts" class="tab-pane d-none">
     <div class="card">
       <div class="card-header d-flex align-items-center gap-2 flex-wrap">
-        <span class="flex-grow-1">Thoughts (aggregated by normalized text)
+        <span class="flex-grow-1">Thoughts (aggregated by text)
           <span class="badge text-bg-secondary" id="thoughtCount"></span></span>
         <label class="form-check-label ms-1"><input class="form-check-input" type="checkbox" id="thoughtRepeatOnly"> repeats only</label>
         <select class="form-select form-select-sm w-auto" id="thoughtLabel"><option value="">All labels</option></select>
@@ -170,7 +192,7 @@
       </div>
       <div class="card-body py-2" id="thoughtOverlapRow"></div>
       <div class="table-responsive"><table class="table table-sm table-hover align-middle mb-0">
-        <thead><tr><th>Thought</th><th>Norm</th><th>#</th><th>Sentences</th><th>Labels</th><th>Runs</th></tr></thead>
+        <thead><tr><th>Thought</th><th>#</th><th>Sentences</th><th>Labels</th><th>Runs</th></tr></thead>
         <tbody id="thoughtBody"></tbody>
       </table></div>
     </div>
@@ -190,28 +212,9 @@
       </div>
       <div class="card-body py-2" id="ideaStatusRow"></div>
       <div class="table-responsive"><table class="table table-sm table-hover align-middle mb-0">
-        <thead><tr><th>Idea (central concept)</th><th>Size</th><th>Evidence (norms)</th></tr></thead>
+        <thead><tr><th>Idea (central concept)</th><th>Size</th><th>Evidence (texts)</th></tr></thead>
         <tbody id="ideaBody"></tbody>
       </table></div>
-    </div>
-  </section>
-
-  <!-- Prompt -->
-  <section id="tab-prompt" class="tab-pane d-none">
-    <div class="card">
-      <div class="card-header d-flex align-items-center gap-2 flex-wrap">
-        <span class="flex-grow-1">Prompt builder</span>
-        <select class="form-select form-select-sm w-auto" id="promptSentence"><option value="">Random sentence</option></select>
-        <input class="form-control form-control-sm w-auto" id="promptMin" type="number" min="1" max="10" value="2" title="min statements">
-        <input class="form-control form-control-sm w-auto" id="promptMax" type="number" min="1" max="10" value="5" title="max statements">
-        <label class="form-check-label ms-2"><input class="form-check-input" type="checkbox" id="promptGeneralize" checked> generalize</label>
-        <button class="btn btn-sm btn-outline-primary" id="promptNew">New / reload</button>
-        <button class="btn btn-sm btn-outline-success" id="promptCopy">Copy</button>
-      </div>
-      <div class="card-body">
-        <pre class="mono p-3 mb-2 bg-body-tertiary rounded" id="promptText" style="white-space:pre-wrap"></pre>
-        <div class="text-secondary small" id="promptMeta"></div>
-      </div>
     </div>
   </section>
 
@@ -272,11 +275,12 @@ function loadQsbc() {
 async function loadStats() {
   const s = await api("/api/stats");
   const cards = [
-    ["Documents", s.documents], ["Sentences", s.sentences], ["Sentence-label pairs", s.sentence_labels],
-    ["Labels", s.labels], ["Single-label (no Others)", s.single_label_sentences], ["Reasonings", s.reasonings],
+    ["Labels", s.labels], ["Documents", s.documents], ["Sentences", s.sentences],
+    ["Sentence/Label Pairs", s.sentence_labels], ["Reasonings", s.reasonings],
+    ["Thoughts", s.thoughts], ["Ideas", s.ideas],
   ];
   document.getElementById("statsCards").innerHTML = cards.map(([t, v]) => `
-    <div class="col-md-2 mb-3"><div class="card text-center"><div class="card-body">
+    <div class="col-6 col-sm-4 col-xl mb-3"><div class="card text-center"><div class="card-body">
       <div class="fs-3">${v.toLocaleString()}</div><div class="text-secondary">${t}</div>
     </div></div></div>`).join("");
   document.getElementById("statsLabelList").innerHTML = s.per_label.map(x => `
@@ -411,7 +415,7 @@ function thoughtChainBody(t, showIdea) {
     : "";
   return `
     <p class="lead mb-1">${esc(t.text)}</p>
-    <p class="small text-secondary">norm: <span class="mono">${esc(t.norm)}</span> · pos #${t.pos} · run <span class="mono">${esc(t.run_id)}</span></p>
+    <p class="small text-secondary">pos #${t.pos} · run <span class="mono">${esc(t.run_id)}</span></p>
     <dl class="row mb-2">
       <dt class="col-sm-3">Label</dt><dd class="col-sm-9"><span class="badge text-bg-info">${esc(t.label || "?")}</span></dd>
       ${idea}
@@ -428,9 +432,9 @@ function thoughtChainBody(t, showIdea) {
       </dd>
     </dl>`;
 }
-async function openThoughtChain(norm) {
-  const d = await api(`/api/thoughts?q=${encodeURIComponent(norm)}&limit=1`);
-  if (!d.items.length) throw new Error("no thoughts for this norm");
+async function openThoughtChain(text) {
+  const d = await api(`/api/thoughts?q=${encodeURIComponent(text)}&limit=1`);
+  if (!d.items.length) throw new Error("no thoughts for this text");
   const t = await api(`/api/thoughts/${d.items[0].id}`);
   document.getElementById("chainModalTitle").innerHTML =
     `Thought chain <span class="badge text-bg-secondary">${d.items[0].id}</span>`;
@@ -445,7 +449,7 @@ async function openIdea(id) {
     `<p class="small text-secondary">threshold ${d.threshold} · created ${esc(d.created_at)}</p>` +
     `<div class="card border-primary mb-3">
        <div class="card-header bg-primary bg-opacity-10 py-1"><b>Central Idea</b></div>
-       <div class="card-body py-2 lead">${esc(d.central.text ?? d.central.norm)}</div>
+       <div class="card-body py-2 lead">${esc(d.central)}</div>
      </div>` +
     (d.thoughts.length ? `<div class="accordion" id="ideaThoughtAcc">${d.thoughts.map((t, i) => `
       <div class="accordion-item">
@@ -506,12 +510,11 @@ async function loadThoughts() {
   document.getElementById("thoughtCount").textContent = d.total.toLocaleString();
   document.getElementById("thoughtPageInfo").textContent = `${thoughtOffset + 1}-${Math.min(thoughtOffset + LIMIT, d.total)} / ${d.total}`;
   document.getElementById("thoughtBody").innerHTML = d.items.length ? d.items.map(x => `
-    <tr style="cursor:pointer" onclick="openThoughtChain('${esc(x.norm)}')">
-      <td>${esc(x.example)}</td>
-      <td class="mono text-secondary">${esc(x.norm)}</td>
+    <tr style="cursor:pointer" onclick="openThoughtChain('${esc(x.text)}')">
+      <td>${esc(x.example ?? x.text)}</td>
       <td><span class="badge ${x.occurrences > 1 ? "text-bg-warning" : "text-bg-secondary"}">${x.occurrences}</span></td>
       <td>${x.sentences}</td><td>${x.labels}</td><td>${x.runs}</td>
-    </tr>`).join("") : `<tr><td colspan="6" class="text-secondary">No thoughts.</td></tr>`;
+    </tr>`).join("") : `<tr><td colspan="5" class="text-secondary">No thoughts.</td></tr>`;
   loadThoughtsOverlap();
 }
 async function loadThoughtsOverlap() {
@@ -551,7 +554,7 @@ async function computeIdeas() {
   try {
     const r = await fetch(`/api/thoughts/ideas?threshold=${t}`, { method: "POST" }).then(x => x.json());
     document.getElementById("ideaStatusRow").innerHTML =
-      `<span class="small">Done: <b>${r.ideas}</b> ideas, ${r.members} members, ${r.singletons} singletons (${r.norms} norms, ${r.failed} failed, threshold ${r.threshold})</span>`;
+      `<span class="small">Done: <b>${r.ideas}</b> ideas, ${r.members} members, ${r.singletons} singletons (${r.texts} texts, ${r.failed} failed, threshold ${r.threshold})</span>`;
     ideaOffset = 0;
     await loadIdeas();
   } catch (err) {
@@ -567,9 +570,9 @@ async function loadIdeas() {
   document.getElementById("ideaPageInfo").textContent = `${ideaOffset + 1}-${Math.min(ideaOffset + LIMIT, d.total)} / ${d.total}`;
   document.getElementById("ideaBody").innerHTML = d.items.length ? d.items.map(x => `
     <tr style="cursor:pointer" onclick="openIdea(${x.id})">
-      <td class="lead">${esc(x.central.text ?? x.central.norm)}</td>
+      <td class="lead">${esc(x.central)}</td>
       <td><span class="badge text-bg-primary">${x.size}</span></td>
-      <td><details><summary class="small text-secondary">${x.norms.length} norms</summary><ol class="mb-0" style="max-height:140px;overflow-y:auto">${x.norms.map(n => `<li class="small">${esc(n)}</li>`).join("")}</ol></details></td>
+      <td><details><summary class="small text-secondary">${x.texts.length} texts</summary><ol class="mb-0" style="max-height:140px;overflow-y:auto">${x.texts.map(t => `<li class="small">${esc(t)}</li>`).join("")}</ol></details></td>
     </tr>`).join("") : `<tr><td colspan="3" class="text-secondary">No ideas.</td></tr>`;
 }
 
@@ -606,10 +609,11 @@ document.getElementById("navTabs").addEventListener("click", async (e) => {
   const tab = btn.dataset.tab;
   state.tab = tab;
   document.getElementById(`tab-${tab}`).classList.remove("d-none");
-  const fn = { qsbc: loadQsbc, c3pa: loadStats, labels: loadLabels, sentences: loadSentences, documents: loadDocuments, reasonings: loadReasonings, thoughts: loadThoughts, ideas: loadIdeas, prompt: loadPrompt }[tab];
+  const fn = { qsbc: loadQsbc, c3pa: loadStats, labels: loadLabels, documents: loadDocuments, sentences: loadSentences, reasonings: loadReasonings, thoughts: loadThoughts, ideas: loadIdeas }[tab];
   try { await fn(); } catch (err) { console.error(err); }
   if (tab === "thoughts") { loadThoughtsSync(); loadThoughtFilters(); }
   if (tab === "ideas") loadIdeaStatus();
+  if (tab === "reasonings") showReasoningsSub("reasonings");
 });
 
 document.addEventListener("click", async (e) => {
@@ -650,6 +654,17 @@ document.getElementById("promptSentence").addEventListener("change", (e) => {
 });
 ["promptMin", "promptMax", "promptGeneralize"].forEach(id =>
   document.getElementById(id).addEventListener("change", loadPrompt));
+
+function showReasoningsSub(view) {
+  const list = view === "prompt";
+  document.getElementById("reasoningsPane").classList.toggle("d-none", list);
+  document.getElementById("promptPane").classList.toggle("d-none", !list);
+  document.getElementById("reasoningsSub").classList.toggle("active", !list);
+  document.getElementById("promptSub").classList.toggle("active", list);
+  if (list) loadPrompt();
+}
+document.getElementById("reasoningsSub").addEventListener("click", () => showReasoningsSub("reasonings"));
+document.getElementById("promptSub").addEventListener("click", () => showReasoningsSub("prompt"));
 
 (async () => { await loadQsbc(); await loadStats(); await loadSentenceFilters(); await loadPromptSentences(); })();
 </script>

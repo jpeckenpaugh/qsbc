@@ -13,6 +13,9 @@ C3PA_Dataset/
 data/
 *.tsv
 
+# DB snapshots
+snapshots/
+
 # macOS
 .DS_Store
 
