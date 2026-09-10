@@ -22,6 +22,8 @@
       <button class="btn btn-sm btn-outline-light" data-tab="labels">Labels</button>
       <button class="btn btn-sm btn-outline-light" data-tab="documents">Documents</button>
       <button class="btn btn-sm btn-outline-light" data-tab="sentences">Sentences</button>
+      <button class="btn btn-sm btn-outline-light" data-tab="models">Models</button>
+      <button class="btn btn-sm btn-outline-light" data-tab="agents">Agents</button>
       <button class="btn btn-sm btn-outline-light" data-tab="reasonings">Reasonings</button>
       <button class="btn btn-sm btn-outline-light" data-tab="thoughts">Thoughts <span class="badge text-bg-warning d-none" id="thoughtsSyncBadge"></span></button>
       <button class="btn btn-sm btn-outline-light" data-tab="ideas">Ideas</button>
@@ -43,6 +45,8 @@
           <span class="badge text-bg-primary">C3PA</span><span class="text-secondary">&#8594;</span>
           <span class="badge text-bg-primary">Labels</span><span class="text-secondary">&#8594;</span>
           <span class="badge text-bg-primary">Sentences</span><span class="text-secondary">&#8594;</span>
+          <span class="badge text-bg-primary">Models</span><span class="text-secondary">&#8594;</span>
+          <span class="badge text-bg-primary">Agents</span><span class="text-secondary">&#8594;</span>
           <span class="badge text-bg-primary">Documents</span><span class="text-secondary">&#8594;</span>
           <span class="badge text-bg-primary">Reasonings</span><span class="text-secondary">&#8594;</span>
           <span class="badge text-bg-primary">Thoughts</span><span class="text-secondary">&#8594;</span>
@@ -139,6 +143,26 @@
     </div>
   </section>
 
+  <!-- Models -->
+  <section id="tab-models" class="tab-pane d-none">
+    <div class="card"><div class="card-header">Models</div>
+      <div class="table-responsive"><table class="table table-sm table-hover align-middle mb-0">
+        <thead><tr><th>Model</th><th>Family</th><th>Size</th><th>Quantization</th><th>Source</th><th>Agents</th><th>Reasonings</th><th>Thoughts</th><th>Ideas</th></tr></thead>
+        <tbody id="modelBody"></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- Agents -->
+  <section id="tab-agents" class="tab-pane d-none">
+    <div class="card"><div class="card-header">Agents</div>
+      <div class="table-responsive"><table class="table table-sm table-hover align-middle mb-0">
+        <thead><tr><th>Agent</th><th>Model</th><th>Temp / variant</th><th>Persona role</th><th>Reasonings</th><th>Thoughts</th><th>Ideas</th><th>Runs</th></tr></thead>
+        <tbody id="agentBody"></tbody>
+      </table></div>
+    </div>
+  </section>
+
   <!-- Reasonings -->
   <section id="tab-reasonings" class="tab-pane d-none">
     <ul class="nav nav-pills mb-3">
@@ -149,6 +173,7 @@
       <div class="card">
         <div class="card-header d-flex align-items-center gap-2">
           <span class="flex-grow-1">Reasonings <span class="badge text-bg-secondary" id="reasonCount"></span></span>
+          <select class="form-select form-select-sm w-auto" id="reasonAgent"><option value="">All agents</option></select>
           <button class="btn btn-sm btn-outline-primary" data-page="prev">Prev</button>
           <span class="mono" id="reasonPageInfo"></span>
           <button class="btn btn-sm btn-outline-primary" data-page="next">Next</button>
@@ -184,6 +209,7 @@
         <label class="form-check-label ms-1"><input class="form-check-input" type="checkbox" id="thoughtRepeatOnly"> repeats only</label>
         <select class="form-select form-select-sm w-auto" id="thoughtLabel"><option value="">All labels</option></select>
         <select class="form-select form-select-sm w-auto" id="thoughtRun"><option value="">All runs</option></select>
+        <select class="form-select form-select-sm w-auto" id="thoughtAgent"><option value="">All agents</option></select>
         <input class="form-control form-control-sm w-auto" id="thoughtQ" placeholder="search thoughts...">
         <input class="form-control form-control-sm w-auto" id="thoughtMin" type="number" min="1" value="1" style="width:90px" title="min occurrences">
         <button class="btn btn-sm btn-outline-primary" data-page="prev">Prev</button>
@@ -352,7 +378,7 @@ async function openSentence(id) {
     ${s.reasonings.length ? s.reasonings.map(r => `
       <div class="border rounded p-2 mb-2">
         <div class="d-flex justify-content-between">
-          <span class="mono">${esc(r.run_id)} · ${esc(r.model || "?")}</span>
+          <span class="mono">${esc(r.run_id)} · ${esc(r.model || "?")} <span class="badge text-bg-secondary">${esc(r.agent || "")}</span></span>
           <span>${r.parse_status === "ok" ? '<span class="badge text-bg-success">parsed</span>' : '<span class="badge text-bg-danger">unparseable</span>'} · ${esc(r.created_at)}</span>
         </div>
         ${r.parse_status === "ok"
@@ -369,16 +395,59 @@ async function loadLabels() {
     <tr><td class="mono">${x.id}</td><td>${esc(x.name)}</td><td>${x.count.toLocaleString()}</td></tr>`).join("");
 }
 
+// ---- Models ----
+async function loadModels() {
+  const d = await api("/api/models");
+  document.getElementById("modelBody").innerHTML = d.length ? d.map(x => `
+    <tr>
+      <td class="mono">${esc(x.name)}</td>
+      <td>${esc(x.family || "—")}</td><td>${esc(x.size || "—")}</td>
+      <td class="mono">${esc(x.quantization || "—")}</td><td>${esc(x.source || "—")}</td>
+      <td>${x.agents}</td><td>${x.reasonings.toLocaleString()}</td>
+      <td>${x.thoughts.toLocaleString()}</td><td>${x.ideas.toLocaleString()}</td>
+    </tr>`).join("") : `<tr><td colspan="9" class="text-secondary">No models.</td></tr>`;
+}
+
+// ---- Agents ----
+async function loadAgents() {
+  const d = await api("/api/agents");
+  document.getElementById("agentBody").innerHTML = d.length ? d.map(x => `
+    <tr style="cursor:pointer" onclick="filterByAgent(${x.id}, '${esc(x.name)} · ${esc(x.model)}')">
+      <td class="mono">${esc(x.name)}</td>
+      <td class="mono">${esc(x.model)}</td>
+      <td>${x.temperature ?? "—"} / ${esc(x.variant || "—")}</td>
+      <td>${esc((x.persona && x.persona.role) || "—")}</td>
+      <td>${x.reasonings.toLocaleString()}</td>
+      <td>${x.thoughts.toLocaleString()}</td>
+      <td>${x.ideas.toLocaleString()}</td>
+      <td class="small text-secondary">${(x.run_ids || []).map(esc).join(", ") || "—"}</td>
+    </tr>`).join("") : `<tr><td colspan="8" class="text-secondary">No agents.</td></tr>`;
+}
+function filterByAgent(id, label) {
+  ["thoughtAgent", "reasonAgent"].forEach(selId => {
+    const sel = document.getElementById(selId);
+    if (!sel) return;
+    const target = sel.querySelector(`option[value="${id}"]`);
+    if (target) sel.value = id; else sel.insertAdjacentHTML("beforeend", `<option value="${id}">${label}</option>`), sel.value = id;
+  });
+  state.reasonOffset = 0; thoughtOffset = 0;
+  const tab = document.getElementById("navTabs").querySelector('[data-tab="reasonings"]');
+  tab.click();
+}
+
 // ---- Reasonings ----
 async function loadReasonings() {
-  const d = await api(`/api/reasonings?limit=${LIMIT}&offset=${state.reasonOffset}`);
+  const agent = document.getElementById("reasonAgent").value;
+  const params = new URLSearchParams({ limit: LIMIT, offset: state.reasonOffset });
+  if (agent) params.set("agent_id", agent);
+  const d = await api(`/api/reasonings?${params}`);
   document.getElementById("reasonCount").textContent = d.total.toLocaleString();
   document.getElementById("reasonPageInfo").textContent = `${state.reasonOffset + 1}-${Math.min(state.reasonOffset + LIMIT, d.total)} / ${d.total}`;
   document.getElementById("reasonBody").innerHTML = d.items.length ? d.items.map(r => `
     <div class="border rounded p-2 mb-2" style="cursor:pointer" onclick="openReasoning(${r.id})">
       <div class="d-flex justify-content-between">
         <span class="mono">#${r.id} · ${esc(r.doc_key)} · <span class="badge text-bg-info">${esc(r.label)}</span> · ${esc(r.run_id)}</span>
-        <span>${r.parse_status === "ok" ? '<span class="badge text-bg-success">parsed</span>' : '<span class="badge text-bg-danger">unparseable</span>'} · ${esc(r.model || "?")} · ${esc(r.created_at)}</span>
+        <span>${r.parse_status === "ok" ? '<span class="badge text-bg-success">parsed</span>' : '<span class="badge text-bg-danger">unparseable</span>'} · ${esc(r.model || "?")} <span class="badge text-bg-secondary">${esc(r.agent || "")}</span> · ${esc(r.created_at)}</span>
       </div>
       <div class="small text-secondary mb-1">${esc(r.text)}</div>
       ${r.parse_status === "ok"
@@ -395,7 +464,7 @@ async function openReasoning(id) {
     <dl class="row mb-2">
       <dt class="col-sm-3">Sentence</dt><dd class="col-sm-9"><span class="mono">${r.sentence_id}</span> · ${esc(r.text)}</dd>
       <dt class="col-sm-3">Run</dt><dd class="col-sm-9 mono">${esc(r.run_id)}</dd>
-      <dt class="col-sm-3">Model</dt><dd class="col-sm-9">${esc(r.model || "?")}</dd>
+      <dt class="col-sm-3">Agent / Model</dt><dd class="col-sm-9">${esc(r.model || "?")} <span class="badge text-bg-secondary">${esc(r.agent || "")}</span></dd>
       <dt class="col-sm-3">Status</dt><dd class="col-sm-9">${r.parse_status === "ok" ? '<span class="badge text-bg-success">parsed</span>' : '<span class="badge text-bg-danger">unparseable</span>'}</dd>
       <dt class="col-sm-3">Created</dt><dd class="col-sm-9">${esc(r.created_at)}</dd>
     </dl>
@@ -420,7 +489,7 @@ function thoughtChainBody(t, showIdea) {
       <dt class="col-sm-3">Label</dt><dd class="col-sm-9"><span class="badge text-bg-info">${esc(t.label || "?")}</span></dd>
       ${idea}
       <dt class="col-sm-3">Reasoning</dt><dd class="col-sm-9">
-        <span class="mono">${esc(t.reasoning.run_id)}</span> · ${esc(t.reasoning.model || "?")} ·
+        <span class="mono">${esc(t.reasoning.run_id)}</span> · ${esc(t.reasoning.model || "?")} <span class="badge text-bg-secondary">${esc(t.reasoning.agent || "")}</span> ·
         ${t.reasoning.parse_status === "ok" ? '<span class="badge text-bg-success">parsed</span>' : '<span class="badge text-bg-danger">unparseable</span>'} ·
         ${esc(t.reasoning.created_at)}
       </dd>
@@ -496,15 +565,27 @@ async function loadThoughtFilters() {
   document.getElementById("thoughtLabel").insertAdjacentHTML("beforeend",
     l.map(x => `<option value="${x.id}">${esc(x.name)}</option>`).join(""));
 }
+async function loadAgentFilters() {
+  if (document.getElementById("thoughtAgent").options.length > 1) return;
+  const ag = await api("/api/agents");
+  const opts = ag.map(x => `<option value="${x.id}">${esc(x.name)} · ${esc(x.model)}</option>`).join("");
+  ["thoughtAgent", "reasonAgent"].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    sel.insertAdjacentHTML("beforeend", opts);
+  });
+}
 async function loadThoughts() {
   const label = document.getElementById("thoughtLabel").value;
   const run = document.getElementById("thoughtRun").value;
+  const agent = document.getElementById("thoughtAgent").value;
   const q = document.getElementById("thoughtQ").value.trim();
   let min = document.getElementById("thoughtMin").value || 1;
   if (document.getElementById("thoughtRepeatOnly").checked && min < 2) min = 2;
   const params = new URLSearchParams({ limit: LIMIT, offset: thoughtOffset, min_occurrences: min });
   if (label) params.set("label_id", label);
   if (run) params.set("run_id", run);
+  if (agent) params.set("agent_id", agent);
   if (q) params.set("q", q);
   const d = await api(`/api/thoughts/aggregated?${params}`);
   document.getElementById("thoughtCount").textContent = d.total.toLocaleString();
@@ -520,9 +601,11 @@ async function loadThoughts() {
 async function loadThoughtsOverlap() {
   const label = document.getElementById("thoughtLabel").value;
   const run = document.getElementById("thoughtRun").value;
+  const agent = document.getElementById("thoughtAgent").value;
   const params = new URLSearchParams();
   if (label) params.set("label_id", label);
   if (run) params.set("run_id", run);
+  if (agent) params.set("agent_id", agent);
   const o = await api(`/api/thoughts/overlap?${params}`);
   const pct = (o.overlap_ratio * 100).toFixed(1);
   document.getElementById("thoughtOverlapRow").innerHTML = `
@@ -609,11 +692,11 @@ document.getElementById("navTabs").addEventListener("click", async (e) => {
   const tab = btn.dataset.tab;
   state.tab = tab;
   document.getElementById(`tab-${tab}`).classList.remove("d-none");
-  const fn = { qsbc: loadQsbc, c3pa: loadStats, labels: loadLabels, documents: loadDocuments, sentences: loadSentences, reasonings: loadReasonings, thoughts: loadThoughts, ideas: loadIdeas }[tab];
+  const fn = { qsbc: loadQsbc, c3pa: loadStats, labels: loadLabels, documents: loadDocuments, sentences: loadSentences, models: loadModels, agents: loadAgents, reasonings: loadReasonings, thoughts: loadThoughts, ideas: loadIdeas }[tab];
   try { await fn(); } catch (err) { console.error(err); }
-  if (tab === "thoughts") { loadThoughtsSync(); loadThoughtFilters(); }
+  if (tab === "thoughts") { loadThoughtsSync(); loadThoughtFilters(); loadAgentFilters(); }
+  if (tab === "reasonings") { loadAgentFilters(); showReasoningsSub("reasonings"); }
   if (tab === "ideas") loadIdeaStatus();
-  if (tab === "reasonings") showReasoningsSub("reasonings");
 });
 
 document.addEventListener("click", async (e) => {
@@ -629,7 +712,8 @@ document.addEventListener("click", async (e) => {
 ["docSubsetFilter"].forEach(id => document.getElementById(id).addEventListener("change", () => { state.docOffset = 0; loadDocuments(); }));
 ["sentDoc", "sentLabel", "sentLabelMode"].forEach(id => document.getElementById(id).addEventListener("change", () => { state.sentOffset = 0; loadSentences(); }));
 let thoughtQTimer;
-["thoughtLabel", "thoughtRun", "thoughtMin", "thoughtRepeatOnly"].forEach(id => document.getElementById(id).addEventListener("change", () => { thoughtOffset = 0; loadThoughts(); }));
+["thoughtLabel", "thoughtRun", "thoughtAgent", "thoughtMin", "thoughtRepeatOnly"].forEach(id => document.getElementById(id).addEventListener("change", () => { thoughtOffset = 0; loadThoughts(); }));
+document.getElementById("reasonAgent").addEventListener("change", () => { state.reasonOffset = 0; loadReasonings(); });
 document.getElementById("thoughtQ").addEventListener("input", () => {
   clearTimeout(thoughtQTimer);
   thoughtQTimer = setTimeout(() => { thoughtOffset = 0; loadThoughts(); }, 400);

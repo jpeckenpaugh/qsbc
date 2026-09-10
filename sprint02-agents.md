@@ -60,10 +60,14 @@ persona).
 
 2. **New `agents` table**
    - `id`, `name` (e.g. `cot`), `model_id` (FK → models),
-     `run_id`, `temperature`, `seed`, `variant`, `scope`,
+     `temperature`, `seed`, `variant`, `scope`,
      `persona jsonb` (holds identity/personality/profile/role).
-   - One row per Agent instance. A run (`bench-04`, `colab-gemma4-01`) is an
-     Agent instance.
+   - **Agent = a Model instantiated with a scope/settings** — keyed on
+     `(model_id, name, temperature, variant)`, NOT run. `run_id` stays a
+     non-key attribute on `reasonings`, not on the Agent.
+   - Today that yields **2 agents**: `cot` on deepseek-v4-flash and `cot` on
+     gemma4. A run (`bench-04`, `colab-gemma4-01`) is an *execution* of an
+     Agent, not the Agent itself.
 
 3. **`reasonings`** — replace the free-text `model` column with an
    `agent_id` FK → agents. The producer becomes a join: Reasoning → Agent →
@@ -112,13 +116,35 @@ persona).
   JSON per agent).
 - Persona as a separate normalized table (we chose a single `jsonb` field).
 
-## Decisions already made
+## Decisions already made (confirmed)
 
-- Persona = single `jsonb` field on `agents` (not normalized columns, not a
-  separate table).
+- **Agent = a Model instantiated with a scope/settings** — NOT run-per-agent.
+  Today that is 2 agents: `cot` on deepseek and `cot` on gemma4. `run_id` is a
+  non-key attribute on `reasonings`, not the Agent identity.
+- **Drop the `reasonings.model` column now**, but keep the POST contract
+  backward-compatible: the API still accepts `model` + `run_id`, and the server
+  **resolves/creates the Agent** from the model (and known scope/settings) and
+  stores `agent_id`. `run_batch.py` and the Colab notebook keep sending `model`.
+- **Migration order**: add `reasonings.agent_id` as **nullable** → backfill via
+  `(model, run_id) → agent` lookup → then make it `NOT NULL` and drop the
+  `model` column.
+- **Persona** = single flexible `jsonb` field on `agents`, derived from the
+  agent `description` (e.g. the `cot.md` "C3PA expert" text) as
+  `{role, style, variant, description}` — not rigidly four fixed keys.
+- **Model metadata**: gemma4 characteristics exist (notebook: family gemma4,
+  ~25.8B, Q4_K_M, Ollama). deepseek has no metadata in the repo — allow NULLs
+  for unknown `family`/`size`/`quantization`/`source`/`checkpoint` fields.
+- **gemma4 import**: a script that re-runs `extract_json_array(raw_response)`
+  to populate `parsed` (the JSON has no `parsed` field), dedups on the FULL
+  `(sentence_id, label_id, run_id)` triple (119 gemma4 pairs overlap deepseek
+  pairs but with a different run — must not skip them), and seeds the gemma4
+  agent BEFORE importing. The 2 unparseable → `parsed NULL`, status
+  `unparseable` (matches the CHECK).
+- **Filters**: keep the existing `run_id` filter AND add an agent filter on
+  Reasonings/Thoughts (different granularity). **Defer** an Ideas agent-filter.
+- **Response shape**: read endpoints return a flat `agent` + `model` string on
+  each reasoning (minimal UI churn), not deeply nested objects.
 - Models = normalized (stable shape); Agents + Persona carry the variable/soft
   data.
-- temperature/seed/variant/scope live on the **Agent** (instance), not the
-  Model.
 - Models + Agents views are the first concrete UI cut; agent filtering on
   derived views is included.

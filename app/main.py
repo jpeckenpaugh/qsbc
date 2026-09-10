@@ -10,7 +10,7 @@ from psycopg.errors import UniqueViolation
 from app.db import connect
 from app.extract import extract_json_array
 from app.promptlib import build_payload, render_prompt
-from app import thoughts, ideas
+from app import thoughts, ideas, agents
 from app import embeddings
 
 app = FastAPI(title="C3PA Explorer", version="0.1.0")
@@ -23,6 +23,7 @@ STATIC_DIR = Path(__file__).parent / "static"
 def startup():
     pool.open()
     with pool.connection() as conn:
+        agents.ensure_schema(conn)
         thoughts.ensure_schema(conn)
         ideas.ensure_schema(conn)
 
@@ -129,6 +130,70 @@ def documents(
     }
 
 
+@app.get("/api/models")
+def list_models():
+    with pool.connection() as conn:
+        rows = conn.execute(
+            """
+            SELECT mo.id, mo.name, mo.family, mo.size, mo.quantization, mo.source, mo.checkpoint,
+                   count(DISTINCT a.id) AS agents,
+                   count(DISTINCT r.id) AS reasonings,
+                   count(DISTINCT t.id) AS thoughts,
+                   count(DISTINCT i.id) AS ideas
+            FROM models mo
+            LEFT JOIN agents a ON a.model_id = mo.id
+            LEFT JOIN reasonings r ON r.agent_id = a.id
+            LEFT JOIN thoughts t ON t.reasoning_id = r.id
+            LEFT JOIN thought_idea ti ON ti.thought_id = t.id
+            LEFT JOIN ideas i ON i.id = ti.idea_id
+            GROUP BY mo.id
+            ORDER BY mo.name
+            """
+        ).fetchall()
+    return [
+        {
+            "id": r[0], "name": r[1],
+            "family": r[2], "size": r[3], "quantization": r[4],
+            "source": r[5], "checkpoint": r[6],
+            "agents": r[7], "reasonings": r[8], "thoughts": r[9], "ideas": r[10],
+        }
+        for r in rows
+    ]
+
+
+@app.get("/api/agents")
+def list_agents():
+    with pool.connection() as conn:
+        rows = conn.execute(
+            """
+            SELECT a.id, a.name, a.temperature, a.variant, a.persona,
+                   m.name,
+                   count(DISTINCT r.id) AS reasonings,
+                   count(DISTINCT t.id) AS thoughts,
+                   count(DISTINCT i.id) AS ideas,
+                   array_agg(DISTINCT r.run_id) FILTER (WHERE r.run_id IS NOT NULL) AS run_ids
+            FROM agents a
+            JOIN models m ON m.id = a.model_id
+            LEFT JOIN reasonings r ON r.agent_id = a.id
+            LEFT JOIN thoughts t ON t.reasoning_id = r.id
+            LEFT JOIN thought_idea ti ON ti.thought_id = t.id
+            LEFT JOIN ideas i ON i.id = ti.idea_id
+            GROUP BY a.id, m.name
+            ORDER BY a.id
+            """
+        ).fetchall()
+    return [
+        {
+            "id": r[0], "name": r[1],
+            "temperature": r[2], "variant": r[3], "persona": r[4],
+            "model": r[5],
+            "reasonings": r[6], "thoughts": r[7], "ideas": r[8],
+            "run_ids": r[9] or [],
+        }
+        for r in rows
+    ]
+
+
 @app.get("/api/sentences")
 def sentences(
     doc_id: int | None = Query(default=None),
@@ -209,8 +274,11 @@ def sentence_detail(sentence_id: int):
         ).fetchall()
         reasonings = conn.execute(
             """
-            SELECT r.id, r.run_id, r.model, r.parse_status, r.parsed, r.raw_response, r.created_at
-            FROM reasonings r WHERE r.sentence_id = %s ORDER BY r.created_at DESC
+            SELECT r.id, r.run_id, a.name, m.name, r.parse_status, r.parsed, r.raw_response, r.created_at
+            FROM reasonings r
+            JOIN agents a ON a.id = r.agent_id
+            JOIN models m ON m.id = a.model_id
+            WHERE r.sentence_id = %s ORDER BY r.created_at DESC
             """,
             (sentence_id,),
         ).fetchall()
@@ -220,9 +288,9 @@ def sentence_detail(sentence_id: int):
         "labels": [{"id": r[0], "name": r[1]} for r in labels],
         "reasonings": [
             {
-                "id": r[0], "run_id": r[1], "model": r[2],
-                "parse_status": r[3], "parsed": r[4], "raw_response": r[5],
-                "created_at": r[6].isoformat(),
+                "id": r[0], "run_id": r[1], "agent": r[2], "model": r[3],
+                "parse_status": r[4], "parsed": r[5], "raw_response": r[6],
+                "created_at": r[7].isoformat(),
             }
             for r in reasonings
         ],
@@ -231,32 +299,43 @@ def sentence_detail(sentence_id: int):
 
 @app.get("/api/reasonings")
 def reasonings(
+    agent_id: int | None = Query(default=None),
     limit: int = Query(default=50, ge=1, le=500),
     offset: int = Query(default=0, ge=0),
 ):
+    where, params = "TRUE", []
+    if agent_id is not None:
+        where = "r.agent_id = %s"
+        params.append(agent_id)
     with pool.connection() as conn:
         rows = conn.execute(
-            """
+            f"""
             SELECT r.id, r.sentence_id, d.doc_key, s.text, l.name,
-                   r.run_id, r.model, r.parse_status, r.parsed, r.created_at
+                   r.run_id, a.name, m.name, r.parse_status, r.parsed, r.created_at
             FROM reasonings r
+            JOIN agents a ON a.id = r.agent_id
+            JOIN models m ON m.id = a.model_id
             JOIN sentences s ON s.id = r.sentence_id
             JOIN documents d ON d.id = s.doc_id
             JOIN labels l ON l.id = r.label_id
+            WHERE {where}
             ORDER BY r.created_at DESC
             LIMIT %s OFFSET %s
             """,
-            (limit, offset),
+            (*params, limit, offset),
         ).fetchall()
-        total = conn.execute("SELECT count(*) FROM reasonings").fetchone()[0]
+        total = conn.execute(
+            f"SELECT count(*) FROM reasonings r WHERE {where}", params
+        ).fetchone()[0]
     return {
         "total": total,
         "items": [
             {
                 "id": r[0], "sentence_id": r[1], "doc_key": r[2],
                 "text": r[3], "label": r[4], "run_id": r[5],
-                "model": r[6], "parse_status": r[7], "parsed": r[8],
-                "created_at": r[9].isoformat(),
+                "agent": r[6], "model": r[7],
+                "parse_status": r[8], "parsed": r[9],
+                "created_at": r[10].isoformat(),
             }
             for r in rows
         ],
@@ -269,8 +348,10 @@ def reasoning_detail(reasoning_id: int):
         row = conn.execute(
             """
             SELECT r.id, r.sentence_id, d.doc_key, s.text, l.name,
-                   r.run_id, r.model, r.parse_status, r.parsed, r.raw_response, r.created_at
+                   r.run_id, a.name, m.name, r.parse_status, r.parsed, r.raw_response, r.created_at
             FROM reasonings r
+            JOIN agents a ON a.id = r.agent_id
+            JOIN models m ON m.id = a.model_id
             JOIN sentences s ON s.id = r.sentence_id
             JOIN documents d ON d.id = s.doc_id
             JOIN labels l ON l.id = r.label_id
@@ -283,8 +364,9 @@ def reasoning_detail(reasoning_id: int):
     return {
         "id": row[0], "sentence_id": row[1], "doc_key": row[2],
         "text": row[3], "label": row[4], "run_id": row[5],
-        "model": row[6], "parse_status": row[7], "parsed": row[8],
-        "raw_response": row[9], "created_at": row[10].isoformat(),
+        "agent": row[6], "model": row[7],
+        "parse_status": row[8], "parsed": row[9],
+        "raw_response": row[10], "created_at": row[11].isoformat(),
     }
 
 
@@ -308,14 +390,17 @@ def create_reasoning(body: ReasoningIn):
     status, parsed = extract_json_array(body.raw_response)
     try:
         with pool.connection() as conn:
+            if not body.model:
+                raise HTTPException(status_code=400, detail="model is required")
+            agent_id = agents.resolve_cot_agent(conn, body.model)
             row = conn.execute(
                 """
                 INSERT INTO reasonings
-                    (sentence_id, label_id, run_id, model, raw_response, parsed, parse_status)
+                    (sentence_id, label_id, run_id, agent_id, raw_response, parsed, parse_status)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
                 RETURNING id
                 """,
-                (body.sentence_id, body.label_id, body.run_id, body.model,
+                (body.sentence_id, body.label_id, body.run_id, agent_id,
                  body.raw_response, Jsonb(parsed) if parsed is not None else None, status),
             ).fetchone()
             thoughts.insert_for_reasoning(
@@ -463,6 +548,7 @@ def thoughts_backfill(
 def list_thoughts(
     label_id: int | None = Query(default=None),
     run_id: str | None = Query(default=None),
+    agent_id: int | None = Query(default=None),
     q: str | None = Query(default=None),
     limit: int = Query(default=50, ge=1, le=500),
     offset: int = Query(default=0, ge=0),
@@ -474,6 +560,9 @@ def list_thoughts(
     if run_id:
         where.append("c.run_id = %s")
         params.append(run_id)
+    if agent_id is not None:
+        where.append("EXISTS (SELECT 1 FROM reasonings rr JOIN agents aa ON aa.id = rr.agent_id WHERE rr.id = c.reasoning_id AND aa.id = %s)")
+        params.append(agent_id)
     if q:
         where.append("c.text ILIKE %s")
         params.append(f"%{q}%")
@@ -514,6 +603,7 @@ def list_thoughts(
 def thoughts_overlap(
     label_id: int | None = Query(default=None),
     run_id: str | None = Query(default=None),
+    agent_id: int | None = Query(default=None),
 ):
     where, params = ["TRUE"], []
     if label_id is not None:
@@ -522,6 +612,9 @@ def thoughts_overlap(
     if run_id:
         where.append("c.run_id = %s")
         params.append(run_id)
+    if agent_id is not None:
+        where.append("EXISTS (SELECT 1 FROM reasonings rr JOIN agents aa ON aa.id = rr.agent_id WHERE rr.id = c.reasoning_id AND aa.id = %s)")
+        params.append(agent_id)
     cond = " AND ".join(where)
     with pool.connection() as conn:
         total_occ = conn.execute(
@@ -591,6 +684,7 @@ def thoughts_overlap(
 def list_thoughts_aggregated(
     label_id: int | None = Query(default=None),
     run_id: str | None = Query(default=None),
+    agent_id: int | None = Query(default=None),
     q: str | None = Query(default=None),
     min_occurrences: int = Query(default=1, ge=1),
     limit: int = Query(default=50, ge=1, le=500),
@@ -603,6 +697,9 @@ def list_thoughts_aggregated(
     if run_id:
         where.append("c.run_id = %s")
         params.append(run_id)
+    if agent_id is not None:
+        where.append("EXISTS (SELECT 1 FROM reasonings rr JOIN agents aa ON aa.id = rr.agent_id WHERE rr.id = c.reasoning_id AND aa.id = %s)")
+        params.append(agent_id)
     if q:
         where.append("c.text ILIKE %s")
         params.append(f"%{q}%")
@@ -737,8 +834,11 @@ def thought_detail(thought_id: int):
             raise HTTPException(status_code=404, detail="not found")
         reason = conn.execute(
             """
-            SELECT r.run_id, r.model, r.parse_status, r.created_at
-            FROM reasonings r WHERE r.id = %s
+            SELECT r.run_id, a.name, m.name, r.parse_status, r.created_at
+            FROM reasonings r
+            JOIN agents a ON a.id = r.agent_id
+            JOIN models m ON m.id = a.model_id
+            WHERE r.id = %s
             """,
             (thought[4],),
         ).fetchone()
@@ -769,8 +869,8 @@ def thought_detail(thought_id: int):
             "created_at": idea[3].isoformat(),
         } if idea else None,
         "reasoning": {
-            "run_id": reason[0], "model": reason[1],
-            "parse_status": reason[2], "created_at": reason[3].isoformat(),
+            "run_id": reason[0], "agent": reason[1], "model": reason[2],
+            "parse_status": reason[3], "created_at": reason[4].isoformat(),
         },
         "sentence": {
             "text": sent[0], "doc_id": sent[1], "doc_key": sent[2],
@@ -807,8 +907,11 @@ def idea_detail(idea_id: int):
         for c in thought_rows:
             reason = conn.execute(
                 """
-                SELECT r.run_id, r.model, r.parse_status, r.created_at
-                FROM reasonings r WHERE r.id = %s
+                SELECT r.run_id, a.name, m.name, r.parse_status, r.created_at
+                FROM reasonings r
+                JOIN agents a ON a.id = r.agent_id
+                JOIN models m ON m.id = a.model_id
+                WHERE r.id = %s
                 """,
                 (c[4],),
             ).fetchone()
@@ -826,8 +929,8 @@ def idea_detail(idea_id: int):
             thoughts.append({
                 "id": c[0], "pos": c[1], "text": c[2], "run_id": c[3],
                 "reasoning": {
-                    "run_id": reason[0], "model": reason[1],
-                    "parse_status": reason[2], "created_at": reason[3].isoformat(),
+                    "run_id": reason[0], "agent": reason[1], "model": reason[2],
+                    "parse_status": reason[3], "created_at": reason[4].isoformat(),
                 },
                 "sentence": {
                     "id": sent[0], "text": sent[1], "doc_key": sent[2],

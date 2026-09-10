@@ -14,7 +14,7 @@ Run inside the app container: docker compose exec app python scripts/resync.py
 """
 
 from app.db import pool
-from app import thoughts, ideas
+from app import thoughts, ideas, agents
 
 THRESHOLD = 0.8
 BATCH_SIZE = 1000
@@ -32,6 +32,7 @@ def main():
         with pool.connection() as conn:
             for t in DERIVED_TABLES:
                 conn.execute(f"DROP TABLE IF EXISTS {t} CASCADE")
+            agents.ensure_schema(conn)
             thoughts.ensure_schema(conn)
             ideas.ensure_schema(conn)
             # Reset watermark (idempotent).
