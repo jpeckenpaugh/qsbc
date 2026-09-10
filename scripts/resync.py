@@ -55,7 +55,7 @@ def main():
         with pool.connection() as conn:
             texts = [
                 x[0]
-                for x in conn.execute("SELECT DISTINCT text FROM thoughts").fetchall()
+                for x in conn.execute("SELECT DISTINCT text FROM thoughts ORDER BY text").fetchall()
             ]
         print(f"distinct thought texts: {len(texts)}")
         if not texts:
