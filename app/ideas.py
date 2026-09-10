@@ -15,10 +15,11 @@ from app import embeddings
 SCHEMA_DDL = [
     """
     CREATE TABLE IF NOT EXISTS ideas (
-        id         BIGSERIAL PRIMARY KEY,
-        size       INTEGER NOT NULL,
-        threshold  REAL NOT NULL,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+        id           BIGSERIAL PRIMARY KEY,
+        size         INTEGER NOT NULL,
+        threshold    REAL NOT NULL,
+        created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+        central_norm TEXT
     )
     """,
     """
@@ -34,6 +35,7 @@ SCHEMA_DDL = [
 def ensure_schema(conn):
     for ddl in SCHEMA_DDL:
         conn.execute(ddl)
+    conn.execute("ALTER TABLE ideas ADD COLUMN IF NOT EXISTS central_norm TEXT")
 
 
 # ---------------------------------------------------------------- clustering ----
@@ -45,8 +47,9 @@ def build_ideas(norms, threshold=0.8, batch=1000, min_idea_size=2):
     >= threshold, avoiding the single-linkage chaining that collapses thoughts
     sharing a common template opening.
 
-    Returns (ideas, failed) where ideas is a list of list-of-norm-strings
-    (size >= min_idea_size) and failed is a count of unembeddable norms."""
+    Returns (ideas, failed) where ideas is a list of (medoid_norm, members)
+    tuples (each cluster with size >= min_idea_size; members is a list of
+    norm strings) and failed is a count of unembeddable norms."""
     if not norms:
         return [], 0
     vecs = embeddings.encode_batch(norms)
@@ -72,11 +75,21 @@ def build_ideas(norms, threshold=0.8, batch=1000, min_idea_size=2):
 
     ideas = []
     by_label = {}
+    idxs_by_label = {}
     for i, lbl in enumerate(labels):
-        by_label.setdefault(int(lbl), []).append(norms[i])
-    for members in by_label.values():
-        if len(members) >= min_idea_size:
-            ideas.append(members)
+        key = int(lbl)
+        by_label.setdefault(key, []).append(norms[i])
+        idxs_by_label.setdefault(key, []).append(i)
+    for lbl, members in by_label.items():
+        if len(members) < min_idea_size:
+            continue
+        # Medoid = the member embedding nearest the cluster centroid (max
+        # dot product in cosine space). Uses row indices, not norms.
+        idxs = idxs_by_label[lbl]
+        sub = arr[idxs]
+        centroid = sub.mean(axis=0)
+        medoid_norm = norms[idxs[int(np.argmax(sub @ centroid))]]
+        ideas.append((medoid_norm, members))
     return ideas, 0
 
 
@@ -85,19 +98,19 @@ def store_ideas(conn, ideas, threshold):
     conn.execute("TRUNCATE thought_idea")
     conn.execute("TRUNCATE ideas RESTART IDENTITY CASCADE")
     stats = {"ideas": 0, "singletons": 0, "members": 0}
-    for c in ideas:
-        if len(c) < 2:
+    for medoid_norm, members in ideas:
+        if len(members) < 2:
             stats["singletons"] += 1
             continue  # don't store singletons
         row = conn.execute(
-            "INSERT INTO ideas (size, threshold) VALUES (%s, %s) RETURNING id",
-            (len(c), threshold),
+            "INSERT INTO ideas (size, threshold, central_norm) VALUES (%s, %s, %s) RETURNING id",
+            (len(members), threshold, medoid_norm),
         ).fetchone()
-        for norm in c:
+        for norm in members:
             conn.execute(
                 "INSERT INTO thought_idea (norm, idea_id) VALUES (%s, %s)",
                 (norm, row[0]),
             )
         stats["ideas"] += 1
-        stats["members"] += len(c)
+        stats["members"] += len(members)
     return stats

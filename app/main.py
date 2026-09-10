@@ -691,7 +691,8 @@ def list_ideas(
     with pool.connection() as conn:
         rows = conn.execute(
             """
-            SELECT cl.id, cl.size, cl.threshold, cl.created_at,
+            SELECT cl.id, cl.size, cl.threshold, cl.created_at, cl.central_norm,
+                   (SELECT t.text FROM thoughts t WHERE t.norm = cl.central_norm ORDER BY t.id LIMIT 1) AS central_text,
                    array_agg(cnc.norm ORDER BY cnc.norm) AS norms
             FROM ideas cl
             JOIN thought_idea cnc ON cnc.idea_id = cl.id
@@ -707,10 +708,135 @@ def list_ideas(
         "items": [
             {
                 "id": r[0], "size": r[1], "threshold": r[2],
-                "created_at": r[3].isoformat(), "norms": r[4],
+                "created_at": r[3].isoformat(),
+                "central": {"norm": r[4], "text": r[5]},
+                "norms": r[6],
             }
             for r in rows
         ],
+    }
+
+
+@app.get("/api/thoughts/{thought_id}")
+def thought_detail(thought_id: int):
+    with pool.connection() as conn:
+        thought = conn.execute(
+            """
+            SELECT c.id, c.pos, c.text, c.norm, c.run_id,
+                   c.reasoning_id, c.sentence_id, c.label_id
+            FROM thoughts c
+            WHERE c.id = %s
+            """,
+            (thought_id,),
+        ).fetchone()
+        if thought is None:
+            raise HTTPException(status_code=404, detail="not found")
+        reason = conn.execute(
+            """
+            SELECT r.run_id, r.model, r.parse_status, r.created_at
+            FROM reasonings r WHERE r.id = %s
+            """,
+            (thought[5],),
+        ).fetchone()
+        sent = conn.execute(
+            """
+            SELECT s.text, s.doc_id, d.doc_key, d.source_file, d.url, d.subset
+            FROM sentences s JOIN documents d ON d.id = s.doc_id
+            WHERE s.id = %s
+            """,
+            (thought[6],),
+        ).fetchone()
+        label = conn.execute(
+            "SELECT name FROM labels WHERE id = %s", (thought[7],)
+        ).fetchone()
+        idea = conn.execute(
+            """
+            SELECT i.id, i.size, i.threshold, i.created_at
+            FROM thought_idea ti JOIN ideas i ON i.id = ti.idea_id
+            WHERE ti.norm = %s
+            """,
+            (thought[3],),
+        ).fetchone()
+    return {
+        "id": thought[0], "pos": thought[1], "text": thought[2],
+        "norm": thought[3], "run_id": thought[4],
+        "idea": {
+            "id": idea[0], "size": idea[1], "threshold": idea[2],
+            "created_at": idea[3].isoformat(),
+        } if idea else None,
+        "reasoning": {
+            "run_id": reason[0], "model": reason[1],
+            "parse_status": reason[2], "created_at": reason[3].isoformat(),
+        },
+        "sentence": {
+            "text": sent[0], "doc_id": sent[1], "doc_key": sent[2],
+            "source_file": sent[3], "url": sent[4], "subset": sent[5],
+        },
+        "label": label[0] if label else None,
+    }
+
+
+@app.get("/api/ideas/{idea_id}")
+def idea_detail(idea_id: int):
+    with pool.connection() as conn:
+        idea = conn.execute(
+            """
+            SELECT id, size, threshold, created_at, central_norm,
+                   (SELECT t.text FROM thoughts t WHERE t.norm = i.central_norm ORDER BY t.id LIMIT 1) AS central_text
+            FROM ideas i WHERE id = %s
+            """,
+            (idea_id,),
+        ).fetchone()
+        if idea is None:
+            raise HTTPException(status_code=404, detail="not found")
+        thought_rows = conn.execute(
+            """
+            SELECT c.id, c.pos, c.text, c.norm, c.run_id,
+                   c.reasoning_id, c.sentence_id, c.label_id
+            FROM thoughts c
+            JOIN thought_idea ti ON ti.norm = c.norm
+            WHERE ti.idea_id = %s
+            ORDER BY c.id
+            """,
+            (idea_id,),
+        ).fetchall()
+        thoughts = []
+        for c in thought_rows:
+            reason = conn.execute(
+                """
+                SELECT r.run_id, r.model, r.parse_status, r.created_at
+                FROM reasonings r WHERE r.id = %s
+                """,
+                (c[5],),
+            ).fetchone()
+            sent = conn.execute(
+                """
+                SELECT s.id, s.text, d.doc_key, d.source_file, d.url, d.subset
+                FROM sentences s JOIN documents d ON d.id = s.doc_id
+                WHERE s.id = %s
+                """,
+                (c[6],),
+            ).fetchone()
+            label = conn.execute(
+                "SELECT name FROM labels WHERE id = %s", (c[7],)
+            ).fetchone()
+            thoughts.append({
+                "id": c[0], "pos": c[1], "text": c[2], "norm": c[3], "run_id": c[4],
+                "reasoning": {
+                    "run_id": reason[0], "model": reason[1],
+                    "parse_status": reason[2], "created_at": reason[3].isoformat(),
+                },
+                "sentence": {
+                    "id": sent[0], "text": sent[1], "doc_key": sent[2],
+                    "source_file": sent[3], "url": sent[4], "subset": sent[5],
+                },
+                "label": label[0] if label else None,
+            })
+    return {
+        "id": idea[0], "size": idea[1], "threshold": idea[2],
+        "created_at": idea[3].isoformat(),
+        "central": {"norm": idea[4], "text": idea[5]},
+        "thoughts": thoughts,
     }
 
 

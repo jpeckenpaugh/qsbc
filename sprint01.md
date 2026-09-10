@@ -51,9 +51,14 @@ about at execution time.
 ### The enabling premise: boundedness
 
 The input is **bound by the knowledge space.** The contract is fixed and small:
-*"Here is one sentence; apply one of 12 labels to it."* Anything outside that
-space does not belong in the system. Out-of-domain input is not a hard case to
+*"Here is one sentence; apply one of 12 in-scope labels to it."* Anything outside
+that space does not belong in the system. Out-of-domain input is not a hard case to
 solve — it is out of scope *by definition*.
+
+The "12 labels" is a deliberate reduction of C3PA's 13 categories: the "Others"
+catch-all label (for "not one of the real categories") is excluded as out of
+scope, and multi-label sentences are excluded so that **each input maps to
+precisely one label**.
 
 This is not a limitation to work around; it is the **enabling premise** of the
 entire project. Because the input is bounded, the recognition problem is closed.
@@ -95,14 +100,20 @@ into human-legible tokens. Nothing that matters is discarded.
 
 The knowledge space is not an abstraction — it is **countable**:
 
-- **12** labels (decision space)
+- **13** labels (12 in-scope; "Others" is the out-of-scope catch-all)
 - **400** documents (source territory)
 - **56,914** sentences (raw material)
 - **81,000** sentence→label pairings (full relations)
-- **37,284** single-label pairings (the actual classification task)
+- **40,505** single-label sentences; **16,409** multi-label sentences
+- **37,284** single-label sentences excluding "Others" (the actual classification task)
 
 The boundary is imposed by the dataset itself. The C3PA corpus *is* the domain,
 closed and given. The chip is the embodiment of that finite, closed space.
+
+The experiment's bounded world is reached by two exclusions from the raw
+dataset: the **"Others"** catch-all label is dropped (13 → 12), and **multi-label
+sentences** are dropped so that **each input sentence maps to precisely one
+label** (40,505 → 37,284).
 
 ## Entity Hierarchy & Formalized Vocabulary
 
