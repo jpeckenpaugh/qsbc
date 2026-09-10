@@ -769,7 +769,7 @@ def compute_ideas(
 ):
     """Recompute semantic Ideas over all distinct thought texts."""
     with pool.connection() as conn:
-        texts = [r[0] for r in conn.execute("SELECT DISTINCT text FROM thoughts").fetchall()]
+        texts = [r[0] for r in conn.execute("SELECT DISTINCT text FROM thoughts ORDER BY text").fetchall()]
     if not texts:
         raise HTTPException(status_code=400, detail="no thoughts to cluster")
     ideas_list, failed = ideas.build_ideas(texts, threshold=threshold)
@@ -785,7 +785,7 @@ def compute_ideas(
 
 @app.get("/api/thoughts/ideas")
 def list_ideas(
-    min_size: int = Query(default=2, ge=2),
+    min_size: int = Query(default=1, ge=1),
     limit: int = Query(default=50, ge=1, le=500),
     offset: int = Query(default=0, ge=0),
 ):
@@ -797,11 +797,12 @@ def list_ideas(
             FROM ideas cl
             JOIN thought_idea cnc ON cnc.idea_id = cl.id
             JOIN thoughts t ON t.id = cnc.thought_id
+            WHERE cl.size >= %s
             GROUP BY cl.id, cl.size, cl.threshold, cl.created_at, cl.central
             ORDER BY cl.size DESC, cl.id
             LIMIT %s OFFSET %s
             """,
-            (limit, offset),
+            (min_size, limit, offset),
         ).fetchall()
         total = conn.execute("SELECT count(*) FROM ideas").fetchone()[0]
     return {

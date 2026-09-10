@@ -42,8 +42,14 @@ def ensure_schema(conn):
 
 # ---------------------------------------------------------------- clustering ----
 
-def build_ideas(texts, threshold=0.8, batch=1000, min_idea_size=2):
+def build_ideas(texts, threshold=0.8, batch=1000, min_idea_size=1):
     """Embed `texts` and group into Ideas by average-linkage agglomerative clustering.
+
+    Every distinct thought is an Idea. Thoughts that are shared and similar
+    enough (average pairwise cosine similarity >= `threshold`) are *consolidated*
+    into one Idea; everything else stands alone as a size-1 Idea. Nothing is
+    dropped: `min_idea_size=1` keeps singletons so every thought maps to exactly
+    one Idea.
 
     Average linkage only merges groups whose *average* pairwise similarity is
     >= threshold, avoiding the single-linkage chaining that collapses thoughts
@@ -101,12 +107,12 @@ def store_ideas(conn, ideas, threshold):
     conn.execute("TRUNCATE ideas RESTART IDENTITY CASCADE")
     stats = {"ideas": 0, "singletons": 0, "members": 0}
     for medoid_text, members in ideas:
-        if len(members) < 2:
+        size = len(members)
+        if size < 2:
             stats["singletons"] += 1
-            continue  # don't store singletons
         row = conn.execute(
             "INSERT INTO ideas (size, threshold, central) VALUES (%s, %s, %s) RETURNING id",
-            (len(members), threshold, medoid_text),
+            (size, threshold, medoid_text),
         ).fetchone()
         for text in members:
             cur = conn.execute(
