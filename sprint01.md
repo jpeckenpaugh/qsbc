@@ -1,5 +1,11 @@
 # Sprint 01 — QSBC: The Bounded Expert
 
+> **STATUS: COMPLETED.** This is a historical planning record. All proposed
+> entity renames were executed (`claims`→`thoughts`, `claim_clusters`→`ideas`,
+> `claim_norm_cluster`→`thought_idea`, `claims_sync`→`thoughts_sync`). The
+> canonical, current concept lives in
+> [`docs/QSBC_CONCEPT.md`](docs/QSBC_CONCEPT.md).
+
 ## Background & Framing
 
 This project builds the **Quantized Semantic Bottleneck Classifier (QSBC)** — an

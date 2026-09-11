@@ -1,5 +1,12 @@
 # Task: Model / Agent / Persona Layering + Views
 
+> **STATUS: COMPLETED.** This is a historical task specification, not current
+> state. The `models` + `agents` tables are populated, `reasonings.model` was
+> migrated to `reasonings.agent_id` (commit `964efd2`), and the gemma4 corpus
+> is now **1,152** reasonings on disk (`results/gemma4/*.json`, imported via
+> `scripts/import_gemma4.py`). The canonical, current concept lives in
+> [`docs/QSBC_CONCEPT.md`](docs/QSBC_CONCEPT.md).
+
 ## Goal
 
 Today, the system stores a single free-text producer string on each reasoning
