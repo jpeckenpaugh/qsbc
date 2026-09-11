@@ -104,7 +104,41 @@ concept to any class logit is **analytically exact**:
 
 $$\text{Attribution}_{jk} = W_{jk} \cdot s_k$$
 
-### 3.2 The four phases
+### 3.2 The "show your work" metaphor
+
+The cleanest way to hold the whole system in your head is a law-school test:
+
+- **X** — the *questions*. Each one is a sentence from a real privacy policy.
+- **Y** — the *multiple-choice answers*. Which of the 12 CPRA categories
+  applies to this sentence?
+- **C** — the *"show your work"*. The 3–5 relevant ideas / reasoning
+  propositions that point from X to Y — the equivalent of a student writing
+  out the reasoning that justifies choosing answer Y rather than the other 11.
+
+In ordinary classification, the model just bubbles in Y. QSBC makes the
+student *show its work*: it writes down C (the reasoning), and the final
+answer Y is derived from C.
+
+The trick of QSBC is what happens to that "show your work" across the whole
+exam. When a frontier model writes out reasoning for all ~37,000 questions,
+those explanations collapse into a **finite vocabulary of recurring ideas**
+(the concept alphabet C = {c_1...c_K}). So each question's "show your work"
+becomes just a short list of concept IDs:
+
+```
+X: "You have the right to request that we correct inaccurate personal
+    information that we maintain about you."
+C: [NORMATIVE] [RIGHT_TO_CORRECT] [DATA_SUBJECT_REQUEST]
+Y: Description of Right to Correct Information
+```
+
+Now the enormous, expensive, 2026 teacher is only needed *once*, to build the
+alphabet and write the reasoning. The deployed system is a much weaker machine
+that (1) reads the question, (2) matches it against the finite idea list, and
+(3) scores the multiple-choice answers with a simple points scoreboard — the
+"show your work" has been pre-compiled into a lookup.
+
+### 3.3 The four phases
 
 ```
 [Phase 1: Discovery]        (X, Doc, Y) ---> Frontier LLM ---> Raw rationale propositions
@@ -141,7 +175,7 @@ Two mechanisms, tested separately:
 **Phase 4 — Decision.** Gate/quantize s, feed a multinomial logistic regression
 head, emit the label plus an exact per-concept attribution map.
 
-### 3.3 Confidence, quantization, and gating
+### 3.4 Confidence, quantization, and gating
 
 Moving from binary activations (c_k ∈ {0,1}) to continuous confidence
 (s_k ∈ [0,1]) makes the bottleneck a *soft* concept bottleneck — the confidence
@@ -163,7 +197,7 @@ possess). Options:
 requirement. Test binary vs decile vs continuous; if deciles ≈ continuous, you
 have demonstrated fine-grained concept confidence was unnecessary.
 
-### 3.4 Information leakage (the soft-CBM risk)
+### 3.5 Information leakage (the soft-CBM risk)
 
 A high-capacity intermediate representation lets the downstream head decode a
 hidden embedding channel instead of interpreting s_k as "probability of concept
