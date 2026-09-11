@@ -59,7 +59,8 @@ of Personal Information Sold*). The reference dataset is the **C3PA** privacy
 policy corpus.
 
 **Reference baselines on the exact single-label 12-class split** (37,284
-sentences / 399 documents):
+sentences / 399 documents — 400 annotation files exist; WS_157 yields no
+qualifying sentences):
 
 | Model | Validation Accuracy | Macro-F1 |
 | ----- | ------------------: | --------: |
@@ -111,7 +112,7 @@ The cleanest way to hold the whole system in your head is a law-school test:
 - **X** — the *questions*. Each one is a sentence from a real privacy policy.
 - **Y** — the *multiple-choice answers*. Which of the 12 CPRA categories
   applies to this sentence?
-- **C** — the *"show your work"*. The 3–5 relevant ideas / reasoning
+- **C** — the *"show your work"*. The 2–5 relevant ideas / reasoning
   propositions that point from X to Y — the equivalent of a student writing
   out the reasoning that justifies choosing answer Y rather than the other 11.
 
@@ -154,7 +155,7 @@ that (1) reads the question, (2) matches it against the finite idea list, and
 
 **Phase 1 — Atomic proposition induction.** Conditioned on the sentence, its
 source document, and the *true label*, a frontier LLM decomposes the reasoning
-into 2–4 atomic, generalized statements ("this sentence mandates metadata
+into 2–5 atomic, generalized statements ("this sentence mandates metadata
 preservation").
 
 **Phase 2 — Alphabet induction & consolidation.** Embed all propositions,
@@ -216,7 +217,10 @@ non-linearly decode a hidden state).
   to a *label-blind* extractor, not the leak it would be in a vanilla
   classifier benchmark.
 - **Every thought is an Idea.** Consolidation (≥2 similar thoughts merging) is
-  an optimization on top, not a gate for existence. No thought is dropped.
+  an optimization on top, not a gate for existence. No thought is dropped from
+  the *alphabet*. Distinct from the classification-feature question in exp3:
+  exp3 measured which ideas are *informative features* (singletons are noise
+  for the probe), not whether a thought is a valid Idea (all are).
 - **The compile-time/runtime split.** All "thinking" (the 2026 LLM) happens
   once, at build time. The deployed device only executes compiled weights.
 
@@ -244,6 +248,7 @@ The ablation ladder isolates *where* performance comes from:
 | exp1 | LR: X → Y | 0.6559 | 0.6581 |
 | exp1 | BERT: X → Y | 0.6468 | 0.6394 |
 | exp2 | LR: X + C_teacher → Y (8,706 ideas) | **0.7541** | **0.7555** |
+| exp2b | Frozen-BERT probe: X → Y (control) | 0.3198 | 0.2851 |
 | exp2b | Frozen-BERT probe: X + C → Y | 0.4054 | 0.3734 |
 | exp3 | LR: X + C_teacher shared-only (1,408) → Y | 0.7468 | 0.7488 |
 | exp4 | LR: Stage-A ridge extractor → B̂ → Y | 0.6135 | 0.6142 |
@@ -261,8 +266,14 @@ The ablation ladder isolates *where* performance comes from:
 
 ### Success criteria (from the review)
 
-- **Interpretability success:** F1_QSBC ≥ F1_BERT − 0.05 (trade-off boundary)
-- **Strong success:** F1_QSBC > F1_BERT
+The reference BERT baseline (0.8208 / 0.7529) is on the **full 37,284-corpus**,
+whereas our evidence table measures the **2,858 idea-mapped subset** (BERT there
+scores 0.6468 / 0.6394). Criteria must be stated per population — never compare
+QSBC-on-2,858 directly against BERT-on-37,284:
+
+- **Interpretability success (same population):** F1_QSBC ≥ F1_BERT − 0.05
+  (trade-off boundary)
+- **Strong success (same population):** F1_QSBC > F1_BERT
 - **Exceptional:** F1_QSBC > F1_BERT and F1_FLAN-T5 with a much smaller
   extractor
 
@@ -280,10 +291,19 @@ measured (0.656). The question is what sits between them:
 > **How much of the +9pt concept ceiling can a label-blind, cheap extractor
 > recover — and what is the cheapest artifact that does it?**
 
-Candidate mechanisms: learned student classifier (deberta-v3-small or smaller),
-retrieval over the concept-indexed corpus, or rules compiled from concept
-medoids. This is the thesis to test next, on the ladder's rungs
-LR(C_student) and LR(X + C_student).
+Candidate mechanisms must stay *inside the 1965 constraint* (sub-megabyte,
+CPU-only, no deep-network machinery at runtime):
+- a **learned student classifier** trained at build time and then compiled to a
+  static sparse weight table (note: a transformer like `deberta-v3-small`
+  violates the runtime constraint as-is — it would have to be distilled down to
+  a static linear artifact, not shipped as a neural net);
+- **retrieval over the concept-indexed corpus** (sparse match / BM25 against
+  concept medoids — non-parametric, trivially small);
+- **rules compiled from concept medoids** (e.g., an Aho-Corasick / n-gram
+  automaton of characteristic anchors).
+
+This is the thesis to test next, on the ladder's rungs LR(C_student) and
+LR(X + C_student).
 
 ---
 
